@@ -153,7 +153,7 @@
     <button type="button" id="unknown">Только новые</button>
     <button type="button" id="reset">Сбросить</button>
   </div>
-  <p class="note">Нажмите карточку, чтобы перевернуть. Свайп влево — дальше, вправо — назад. Файл самодостаточный: уменьшенные фото вшиты. Если рядом есть папка LH_dictionary_photos, на компьютере подставляются снимки большего размера.</p>
+  <p class="note">Нажмите карточку, чтобы перевернуть. Свайп влево — дальше, вправо — назад.</p>
   <p id="nojs">Карточки не запустились. На iPhone файл из «Файлы», Telegram или почты открывается как просмотр, без JavaScript. Нужна ссылка в Safari (не сам файл) либо компьютер: Chrome / Edge.</p>
 </div>
 <noscript>
@@ -12694,13 +12694,7 @@ var KEY = "lh-dict-eq-known";
 var CHIP_NAMES = ["Все", "Быт", "Работа", "Государство", "Техника", "Оценка", "Война"];
 var INTRO = {
   "title": "Словарь · соответствия",
-  "topic": "Устойчивые английские словосочетания и их русские соответствия из списка «сложных слов для перевода» (79 единиц)",
-  "source": "таблица Dictionary/1.jpg–3.jpg; узус перевода, не пословная калька",
-  "notes": [
-    "Русская колонка — готовый эквивалент. Калька вроде «солнечная сторона вверх» или «сила полиции» здесь как раз ошибка.",
-    "№26 в отпечатке читается как «отгул» (не «оттул»).",
-    "bar chart в таблице — «гистограмма»; в строгой статистике это столбчатая диаграмма, histogram — гистограмма."
-  ]
+  "topic": "Устойчивые английские словосочетания и их русские соответствия (79 единиц)"
 };
 var INTRO_KEY = KEY + "-intro-seen";
 var known = {};
@@ -12720,8 +12714,7 @@ try {
 
 function introHasContent() {
   if (!INTRO) return false;
-  if (INTRO.topic || INTRO.source) return true;
-  return !!(INTRO.notes && INTRO.notes.length);
+  return !!(INTRO.topic || INTRO.title);
 }
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(Object.keys(known))); } catch (e) {}
@@ -12739,8 +12732,11 @@ function photoHtml(card) {
   if (!p) return "";
   var start = p.thumb || p.src;
   var large = (p.src && p.thumb) ? p.src : "";
-  return '<div class="picture"><img alt="" src="' + start + '" data-large="' + large + '"></div>'
-    + '<p class="credit"><a href="' + p.href + '" target="_blank" rel="noopener">' + escapeHtml(p.credit) + '</a></p>';
+  var html = '<div class="picture"><img alt="" src="' + start + '" data-large="' + large + '"></div>';
+  if (p.credit && p.href && p.href !== "#") {
+    html += '<p class="credit"><a href="' + p.href + '" target="_blank" rel="noopener">' + escapeHtml(p.credit) + "</a></p>";
+  }
+  return html;
 }
 function upgradePhoto() {
   var img = document.querySelector(".picture img");
@@ -12777,8 +12773,9 @@ function renderChips() {
 }
 function introBlock(label, text) {
   if (!text) return "";
-  return '<p class="intro-label">' + escapeHtml(label) + "</p>"
-    + '<p class="intro-text">' + escapeHtml(text) + "</p>";
+  var html = "";
+  if (label) html += '<p class="intro-label">' + escapeHtml(label) + "</p>";
+  return html + '<p class="intro-text">' + escapeHtml(text) + "</p>";
 }
 function renderIntro() {
   var knownCount = CARDS.filter(function (card) { return known[card.id]; }).length;
@@ -12786,17 +12783,9 @@ function renderIntro() {
   document.getElementById("fill").style.width = CARDS.length ? Math.round(knownCount / CARDS.length * 100) + "%" : "0%";
   document.getElementById("unknown").textContent = onlyNew ? "Все карточки" : "Только новые";
   document.body.className = (document.body.className || "").replace(/\bintro-on\b/g, "") + " intro-on";
-  var notes = INTRO.notes || [];
-  var notesHtml = "";
-  var i;
-  for (i = 0; i < notes.length; i++) {
-    notesHtml += '<p class="intro-text' + (i === notes.length - 1 ? " last" : "") + '">' + escapeHtml(notes[i]) + "</p>";
-  }
   var inner = '<p class="kicker">О колоде</p>'
     + '<h2 class="word">' + escapeHtml(INTRO.title || "Колода") + "</h2>"
-    + introBlock("Тематика", INTRO.topic)
-    + introBlock("Источник", INTRO.source)
-    + (notesHtml ? '<p class="intro-label">Стиль и перевод</p>' + notesHtml : "")
+    + introBlock("", INTRO.topic)
     + '<p class="hint">Нажмите «Дальше», чтобы начать. Эта карточка больше не появится.</p>';
   document.getElementById("stage").innerHTML =
     '<div class="card intro" id="card" role="button" tabindex="0">' + inner + "</div>";
