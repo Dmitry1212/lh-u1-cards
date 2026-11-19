@@ -156,12 +156,13 @@ var STR = {
 };
 var KEY = "deck-index";
 var KNOWN = [
-  "LH_A_znachit_cards.html",
-  "LH_dictionary_cards.html",
-  "LH_UpperInt_U1_cards.html",
-  "LHTL_Week1_cards.html"
+  { file: "LH_A_znachit_cards.html", title: "А значит?" },
+  { file: "LH_dictionary_cards.html", title: "Сложные соответствия EN→RU" },
+  { file: "LH_UpperInt_U1_cards.html", title: "Language Hub U1 — карточки" },
+  { file: "LHTL_Week1_cards.html", title: "Learning How to Learn — неделя 1, термины" }
 ];
 var state = { lang: "ru", theme: "light", decks: [], note: "" };
+var listGen = 0;
 
 function prefTheme() {
   try {
@@ -286,18 +287,72 @@ function folderUrl() {
   var href = location.href.split("#")[0].split("?")[0];
   return href.slice(0, href.lastIndexOf("/") + 1);
 }
+function knownTitle(file) {
+  var name = decodedName(file);
+  for (var i = 0; i < KNOWN.length; i++) {
+    if (KNOWN[i].file === name) return KNOWN[i].title;
+  }
+  return "";
+}
+function decksFromKnown() {
+  return KNOWN.filter(function (deck) { return keptDeck(deck.file); }).map(function (deck) {
+    return { file: deck.file, title: deck.title };
+  });
+}
+function titleIn(text, file) {
+  var m = String(text || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return { file: file, title: decodeTitle(m && m[1], file) };
+}
+function titleFromHead(file) {
+  var name = decodedName(file);
+  return fetch(file, { headers: { Range: "bytes=0-4095" } }).then(function (res) {
+    if (!res.ok && res.status !== 206) return null;
+    var length = +(res.headers.get("Content-Length") || 0);
+    if (res.status === 200 && (!length || length > 8192) && res.body && res.body.getReader) {
+      var reader = res.body.getReader();
+      return reader.read().then(function (part) {
+        try { reader.cancel(); } catch (e) {}
+        var bytes = part.value || new Uint8Array();
+        return titleIn(new TextDecoder("utf-8").decode(bytes), name);
+      });
+    }
+    return res.text().then(function (body) { return titleIn(body, name); });
+  }, function () { return { file: name, title: name }; });
+}
 function withTitles(files) {
   return Promise.all(files.map(function (file) {
-    return fetch(file).then(function (res) {
-      if (!res.ok) return null;
-      return res.text().then(function (body) {
-        var m = body.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-        return { file: file, title: decodeTitle(m && m[1], file) };
-      });
-    }, function () { return { file: file, title: file }; });
+    var name = decodedName(file);
+    var title = knownTitle(name);
+    if (title) return { file: name, title: title };
+    return titleFromHead(name);
   })).then(function (rows) { return rows.filter(Boolean); });
 }
+function sameFiles(files) {
+  var listed = files.map(decodedName);
+  if (listed.length !== state.decks.length) return false;
+  for (var i = 0; i < listed.length; i++) {
+    if (listed[i] !== state.decks[i].file) return false;
+  }
+  return true;
+}
+function hideMissing() {
+  var gen = listGen;
+  var shown = state.decks.slice();
+  Promise.all(shown.map(function (deck) {
+    return fetch(deck.file, { method: "HEAD" }).then(function (res) {
+      return (res.ok || res.status === 206) ? deck : null;
+    }, function () { return deck; });
+  })).then(function (rows) {
+    if (gen !== listGen) return;
+    var next = rows.filter(Boolean);
+    if (next.length === shown.length) return;
+    state.decks = next;
+    if (!next.length) state.note = "empty";
+    paint();
+  });
+}
 function show(files, note) {
+  listGen++;
   state.note = note || "";
   files = files.filter(keptDeck);
   withTitles(files).then(function (decks) {
@@ -308,13 +363,21 @@ function show(files, note) {
 }
 function load() {
   loadState();
-  state.note = "loading";
+  state.decks = decksFromKnown();
+  state.note = state.decks.length ? "" : "loading";
   paint();
+  if (state.decks.length) hideMissing();
   fetch(folderUrl()).then(function (res) { return res.text(); }).then(function (html) {
     var files = filesFromListing(html);
-    if (files) { show(files, ""); return; }
-    show(KNOWN.slice(), "");
-  }, function () { show(KNOWN.slice(), location.protocol === "file:" ? "fail" : ""); });
+    if (!files) {
+      if (!state.decks.length) show([], "fail");
+      return;
+    }
+    if (sameFiles(files)) return;
+    show(files, "");
+  }, function () {
+    if (!state.decks.length) show([], "fail");
+  });
 }
 load();
 </script>
