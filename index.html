@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Колоды</title>
+<style>
+  :root {
+    --ink: #111111;
+    --muted: #6b6b6b;
+    --line: #e4e4e4;
+    --paper: #fafafa;
+    --chip: #efefef;
+    --on: #111111;
+    --on-ink: #fafafa;
+    --focus: #111111;
+  }
+  html[data-theme="dark"] {
+    --ink: #f4f4f4;
+    --muted: #9a9a9a;
+    --line: #2c2c2c;
+    --paper: #0e0e0e;
+    --chip: #1c1c1c;
+    --on: #f4f4f4;
+    --on-ink: #111111;
+    --focus: #f4f4f4;
+    color-scheme: dark;
+  }
+  html[data-theme="light"] { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    padding:
+      calc(28px + env(safe-area-inset-top, 0px))
+      20px
+      calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px 28px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(28px, 6vw, 48px);
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .lead { margin: 12px 0 0; max-width: 36em; color: var(--muted); font-size: 16px; line-height: 1.45; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg { display: flex; flex-wrap: wrap; background: var(--chip); border-radius: 999px; padding: 3px; }
+  .seg button {
+    font: inherit;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { background: var(--on); color: var(--on-ink); }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .count { margin: 26px 0 0; color: var(--muted); font-size: 14px; }
+  .decks { margin-top: 6px; }
+  .deck {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 22px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    color: inherit;
+    text-decoration: none;
+  }
+  .num {
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1;
+    color: var(--muted);
+    min-width: 2.4ch;
+    font-variant-numeric: tabular-nums;
+  }
+  .text { flex: 1 1 220px; min-width: 0; }
+  .file { display: block; color: var(--muted); font-size: 13px; }
+  .name { display: block; margin-top: 4px; font-size: clamp(20px, 2.6vw, 28px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; }
+  .go { margin-left: auto; color: var(--ink); font-size: 15px; }
+  .status { margin: 22px 0 0; max-width: 40em; color: var(--muted); font-size: 15px; line-height: 1.45; }
+  .feedback { margin: 36px 0 0; max-width: 36em; color: var(--muted); font-size: 16px; line-height: 1.45; }
+  .feedback a { color: var(--ink); }
+  @media (max-width: 560px) {
+    body { padding-left: 16px; padding-right: 16px; }
+    .go { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="heading"></h1>
+      <p class="lead" id="lead"></p>
+    </div>
+    <div class="controls">
+      <div class="seg" id="langs" role="group"></div>
+      <div class="seg" id="themes" role="group"></div>
+    </div>
+  </header>
+  <p class="count" id="count"></p>
+  <div class="decks" id="decks"></div>
+  <p class="status" id="status"></p>
+  <p class="feedback"><span id="feedback-text"></span> <a id="feedback-link" href="https://forms.yandex.ru/u/6aff4164b9e5caadd649ba1c" target="_blank" rel="noopener noreferrer"></a></p>
+</div>
+<script>
+var STR = {
+  ru: {
+    heading: "Технический перевод (МГТУ)",
+    lead: "Личные колоды по курсу «Технический английский». С телефона в дороге или с компьютера.",
+    feedback: "Мысль, трудность или впечатление — напишите.",
+    feedbackLink: "Оставить отзыв",
+    open: "Открыть",
+    loading: "Читаю папку…",
+    empty: "В этой папке нет файлов колод. Колода — html-файл, в имени которого есть cards.",
+    fail: "Папку прочитать не удалось. Откройте страницу с сервера, а не как файл с диска.",
+    count: function (n) {
+      var n10 = n % 10, n100 = n % 100;
+      var word = "колод";
+      if (n10 === 1 && n100 !== 11) word = "колода";
+      else if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20)) word = "колоды";
+      return n + " " + word;
+    },
+    langs: [["ru", "Русский"], ["en", "English"]],
+    themes: [["light", "Светлая"], ["dark", "Тёмная"]]
+  },
+  en: {
+    heading: "TechEng — BMSTU",
+    lead: "Personal decks from the Technical English course. On a phone on the go, or on a computer.",
+    feedback: "A thought, a snag, or an impression — leave a note.",
+    feedbackLink: "Leave feedback",
+    open: "Open",
+    loading: "Reading the folder…",
+    empty: "No deck files in this folder. A deck is an html file whose name contains “cards”.",
+    fail: "Could not read the folder. Open the page from a server, not as a file on disk.",
+    count: function (n) { return n + (n === 1 ? " deck" : " decks"); },
+    langs: [["ru", "Русский"], ["en", "English"]],
+    themes: [["light", "Light"], ["dark", "Dark"]]
+  }
+};
+var KEY = "deck-index";
+var KNOWN = [
+  "LH_A_znachit_cards.html",
+  "LH_dictionary_cards.html",
+  "LH_UpperInt_U1_cards.html",
+  "LHTL_Week1_cards.html"
+];
+var state = { lang: "ru", theme: "light", decks: [], note: "" };
+
+function prefTheme() {
+  try {
+    if (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+  } catch (e) {}
+  return "light";
+}
+function loadState() {
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+    if (saved.lang === "en" || saved.lang === "ru") state.lang = saved.lang;
+    if (saved.theme === "dark" || saved.theme === "light") state.theme = saved.theme;
+    else state.theme = prefTheme();
+  } catch (e) {
+    state.theme = prefTheme();
+  }
+}
+function saveState() {
+  try { localStorage.setItem(KEY, JSON.stringify({ lang: state.lang, theme: state.theme })); } catch (e) {}
+}
+function t() { return STR[state.lang]; }
+function pad(n) { return (n < 10 ? "0" : "") + n; }
+function seg(id, items, current, onPick) {
+  var box = document.getElementById(id);
+  box.innerHTML = "";
+  items.forEach(function (item) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = item[1];
+    btn.setAttribute("aria-pressed", item[0] === current ? "true" : "false");
+    btn.addEventListener("click", function () { onPick(item[0]); });
+    box.appendChild(btn);
+  });
+}
+function paint() {
+  var s = t();
+  document.documentElement.lang = state.lang;
+  document.documentElement.setAttribute("data-theme", state.theme);
+  document.title = s.heading;
+  document.getElementById("heading").textContent = s.heading;
+  document.getElementById("lead").textContent = s.lead;
+  document.getElementById("feedback-text").textContent = s.feedback;
+  document.getElementById("feedback-link").textContent = s.feedbackLink;
+  document.getElementById("count").textContent = state.decks.length ? s.count(state.decks.length) : "";
+  document.getElementById("status").textContent = state.note ? (s[state.note] || "") : "";
+  seg("langs", s.langs, state.lang, function (id) { state.lang = id; saveState(); paint(); render(); });
+  seg("themes", s.themes, state.theme, function (id) { state.theme = id; saveState(); paint(); });
+  render();
+}
+function render() {
+  var box = document.getElementById("decks");
+  box.innerHTML = "";
+  state.decks.forEach(function (deck, i) {
+    var a = document.createElement("a");
+    a.className = "deck";
+    a.href = deck.file;
+    var num = document.createElement("span");
+    num.className = "num";
+    num.textContent = pad(i + 1);
+    var text = document.createElement("span");
+    text.className = "text";
+    var file = document.createElement("span");
+    file.className = "file";
+    file.textContent = deck.file;
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = deck.title;
+    var go = document.createElement("span");
+    go.className = "go";
+    go.textContent = t().open;
+    text.appendChild(file);
+    text.appendChild(name);
+    a.appendChild(num);
+    a.appendChild(text);
+    a.appendChild(go);
+    box.appendChild(a);
+  });
+}
+function decodeTitle(raw, fallback) {
+  var el = document.createElement("textarea");
+  el.innerHTML = String(raw || "").replace(/\s+/g, " ").trim();
+  return el.value || fallback;
+}
+function isFolderListing(html) {
+  var py = "Directory" + " listing for ";
+  var ix = "Index" + " of ";
+  return html.indexOf("<title>" + py) !== -1 || html.indexOf("<h1>" + py) !== -1
+    || html.indexOf("<title>" + ix) !== -1 || html.indexOf("<h1>" + ix) !== -1;
+}
+function byName(a, b) {
+  var x = a.toLowerCase(), y = b.toLowerCase();
+  if (x < y) return -1;
+  if (x > y) return 1;
+  return 0;
+}
+function decodedName(href) {
+  try { return decodeURIComponent(href); }
+  catch (e) { return href; }
+}
+function keptDeck(file) {
+  return decodedName(file).charAt(0) !== "!";
+}
+function filesFromListing(html) {
+  if (!isFolderListing(html)) return null;
+  var doc = new DOMParser().parseFromString(html, "text/html");
+  var links = doc.getElementsByTagName("a");
+  var out = [];
+  var seen = {};
+  for (var i = 0; i < links.length; i++) {
+    var href = (links[i].getAttribute("href") || "").split("#")[0].split("?")[0];
+    if (!href || href.indexOf("/") !== -1 || !keptDeck(href)) continue;
+    if (!/\.html?$/i.test(href) || !/cards/i.test(href)) continue;
+    var low = decodedName(href).toLowerCase();
+    if (low === "index.html" || low === "index.htm" || seen[low]) continue;
+    seen[low] = true;
+    out.push(href);
+  }
+  out.sort(byName);
+  return out;
+}
+function folderUrl() {
+  var href = location.href.split("#")[0].split("?")[0];
+  return href.slice(0, href.lastIndexOf("/") + 1);
+}
+function withTitles(files) {
+  return Promise.all(files.map(function (file) {
+    return fetch(file).then(function (res) {
+      if (!res.ok) return null;
+      return res.text().then(function (body) {
+        var m = body.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        return { file: file, title: decodeTitle(m && m[1], file) };
+      });
+    }, function () { return { file: file, title: file }; });
+  })).then(function (rows) { return rows.filter(Boolean); });
+}
+function show(files, note) {
+  state.note = note || "";
+  files = files.filter(keptDeck);
+  withTitles(files).then(function (decks) {
+    state.decks = decks;
+    if (!decks.length && !state.note) state.note = "empty";
+    paint();
+  });
+}
+function load() {
+  loadState();
+  state.note = "loading";
+  paint();
+  fetch(folderUrl()).then(function (res) { return res.text(); }).then(function (html) {
+    var files = filesFromListing(html);
+    if (files) { show(files, ""); return; }
+    show(KNOWN.slice(), "");
+  }, function () { show(KNOWN.slice(), location.protocol === "file:" ? "fail" : ""); });
+}
+load();
+</script>
+</body>
+</html>
