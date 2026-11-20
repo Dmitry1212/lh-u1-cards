@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Машинный перевод сейчас — оригинал и перевод</title>
+<style>
+@page { size: A4 landscape; margin: 12mm 10mm; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; background: #fff; color: #1c1914;
+  font: 11pt/1.42 "Times New Roman", Times, serif;
+}
+.wrap { max-width: 277mm; margin: 0 auto; padding: 8mm 6mm 10mm; }
+header { border-bottom: 2px solid #6b2d3c; padding-bottom: 8px; margin-bottom: 12px; }
+h1 { font-size: 16pt; margin: 0 0 4px; color: #6b2d3c; }
+.meta { font-size: 10pt; color: #444; margin: 0 0 4px; }
+nav { font-size: 10.5pt; margin: 8px 0 12px; line-height: 1.6; }
+nav a { color: #6b2d3c; margin-right: 12px; }
+h2 {
+  font-size: 13.5pt; color: #6b2d3c; border-bottom: 1px solid #ccc;
+  margin: 18px 0 8px; page-break-after: avoid;
+}
+h2.break { page-break-before: always; }
+.pair {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px;
+  margin: 0 0 7px; page-break-inside: avoid;
+}
+.pair p {
+  margin: 0; padding: 6px 8px; border: 1px solid #ddd;
+  text-align: justify; hyphens: auto;
+}
+.pair .en { background: #f7f3ec; }
+.pair .ru { background: #fff; }
+.cols {
+  font-size: 9pt; color: #666; margin: 0 0 6px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.note { font-size: 10.5pt; color: #222; margin: 0 0 8px; }
+ul.notes { margin: 0 0 12px; padding-left: 18px; }
+ul.notes li { margin: 0 0 6px; }
+ol.pair-list { margin: 0; padding-left: 1.2em; }
+table.dict { width: 100%; border-collapse: collapse; font-size: 10pt; margin: 8px 0 12px; }
+table.dict th, table.dict td {
+  border: 1px solid #bbb; padding: 4px 6px; vertical-align: top; text-align: left;
+}
+table.dict th { background: #f0e6e4; color: #6b2d3c; }
+footer {
+  margin-top: 14px; padding-top: 6px; border-top: 1px solid #ccc;
+  font-size: 9.5pt; color: #444;
+}
+@media print {
+  .wrap { max-width: none; padding: 0; }
+  nav { display: none; }
+  a { color: inherit; text-decoration: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Современное состояние машинного перевода: смысл, калька и оценка качества</h1>
+<p class="meta">Брифинг для лингвистов. Слева английский текст к слайдам, справа перевод в научном регистре. Термины согласованы с глоссарием рабочей папки.</p>
+<p class="meta">Карточки к докладу: <a href="MT_talk_cards.html">MT_talk_cards.html</a>. Слайды: <a href="MT_current_state_slides.html">MT_current_state_slides.html</a>.</p>
+</header>
+<nav>
+<a href="#t">Текст</a>
+<a href="#comments">Комментарии</a>
+<a href="#dict">Словарь</a>
+</nav>
+
+<div class="cols"><span>English</span><span>Русский</span></div>
+
+<h2 id="t">Брифинг</h2>
+
+<div class="pair">
+<p class="en">The current state of machine translation: meaning, calque, and quality rating. A briefing for linguists. English text to accompany the slide deck. Synthesis dated 15 November 2026, revised for this lecture.</p>
+<p class="ru">Современное состояние машинного перевода: смысл, калька и оценка качества. Брифинг для лингвистов. Английский текст к слайдам. Сводка от 15 ноября 2026 г., доработана для данной лекции.</p>
+</div>
+
+<div class="pair">
+<p class="en">Takeaway. Machine translation in the large-language-model period is fluent enough to disguise its own failures. Quality is not one property. A useful translation must preserve intended meaning, sound natural in the target language, and fit its audience and use. Those aims can pull apart. Automated scores remain screening tools. Linguists still have to judge meaning, idiomaticity, and fitness for purpose.</p>
+<p class="ru">Главный вывод. В период больших языковых моделей машинный перевод достаточно естествен по форме, чтобы скрывать собственные ошибки. Качество не является единым свойством. Пригодный перевод должен сохранять намеченный смысл, быть естественным на языке перевода и соответствовать аудитории и назначению текста. Эти требования могут расходиться. Автоматические оценки остаются средством первичного отбора. Оценку смысла, идиоматичности и соответствия назначению по-прежнему выполняет лингвист.</p>
+</div>
+
+<h2>1. What has changed, and what has not / Что изменилось и что нет</h2>
+
+<div class="pair">
+<p class="en">Translation technology has moved from hand-built linguistic rules, through statistical learning from parallel text, to neural sequence models, and now to general-purpose language models that treat translation as one prompted task among others. Each stage expanded what can be automated. None removed the need to check meaning, context, and target-language use. Ataman, Birch, Habash, Federico, Koehn and Cho (2025) describe this as a history of changing trade-offs, not a march toward error-free output. Dedicated neural MT can still be preferable where terminology control, consistency, or cost matter more than open-ended instruction following.</p>
+<p class="ru">Технология перевода прошла путь от лингвистических правил, составленных вручную, через статистическое обучение по параллельным текстам к нейронным моделям последовательностей и далее к языковым моделям общего назначения, для которых перевод — одна из задач, задаваемых текстовой инструкцией. Каждый этап расширил область автоматизации. Ни один не снял необходимости проверять смысл, контекст и узус языка перевода. Ataman, Birch, Habash, Federico, Koehn и Cho (2025) описывают это как историю смены компромиссов, а не как движение к безошибочному выходу. Специализированный нейронный машинный перевод по-прежнему предпочтителен там, где контроль терминологии, согласованность или стоимость важнее свободного следования инструкциям.</p>
+</div>
+
+<div class="pair">
+<p class="en">In professional work the live choice is rarely “human or machine”. It is which tasks to automate, what review to require, and who is accountable for the finished text. Post-editing sometimes saves time and sometimes does not; Koponen’s survey (2016) already showed that the result depends on error type as well as on the engine. Mistranslated idioms and damaged word order can demand more labour than a from-scratch draft. A small English-to-Chinese student study found less pausing in post-editing and some improvement over raw MT, yet raters still preferred from-scratch translations more often, and the authors warned against generalizing from inexperienced editors (Jia, Carl and Wang, 2019). An average productivity figure is not a guarantee for a given service.</p>
+<p class="ru">В профессиональной работе актуальный выбор редко сводится к альтернативе «человек или машина». Речь идёт о том, какие операции автоматизировать, какую правку требовать и кто несёт ответственность за готовый текст. Постредактирование то экономит время, то не экономит; обзор Koponen (2016) уже показал, что результат зависит как от типа ошибки, так и от системы. Ошибочно переведённые идиомы и нарушенный порядок слов могут потребовать больше труда, чем черновик, выполненный с нуля. В небольшом студенческом исследовании англо-китайского направления при постредактировании отмечалось меньше пауз и некоторое улучшение относительно сырого машинного перевода, однако оценщики чаще предпочитали перевод с нуля; авторы предостерегают от переноса выводов, полученных на неопытных редакторах (Jia, Carl и Wang, 2019). Средняя цифра производительности не является гарантией для конкретного вида услуг.</p>
+</div>
+
+<div class="pair">
+<p class="en">Human-centered MT research makes the same point from another side: most users of MT are not professional translators, cannot reliably judge output, and work in communicative situations that a leaderboard does not represent (Carpuat et al., 2025). Translation studies already treats translation as situated decision-making. The technical stack has not abolished that fact.</p>
+<p class="ru">Исследования человекоцентричного машинного перевода подводят к тому же с другой стороны: большинство пользователей МП не являются профессиональными переводчиками, не могут надёжно оценить выход системы и действуют в коммуникативных ситуациях, которых таблица лидеров на эталоне не отражает (Carpuat и соавт., 2025). В переводоведении перевод уже трактуется как ситуативное принятие решений. Технический контур этого факта не отменяет.</p>
+</div>
+
+<h2>2. Conveying meaning without calque / Передача смысла без кальки</h2>
+
+<div class="pair">
+<p class="en">Avoiding calques is not a policy of translating as freely as possible. The fault is a rendering that follows source wording or structure so closely that it sounds unnatural, misstates the intended sense, or fails in its target context. The relevant test is whether the translation preserves what the source is doing, not whether it mirrors its form.</p>
+<p class="ru">Избегание калек не есть установка переводить как можно свободнее. Ошибка — передача, которая настолько следует формулировке или структуре оригинала, что звучит неестественно, искажает намеченный смысл или не работает в целевом контексте. Существенна проверка того, сохраняет ли перевод то, что делает исходный текст, а не то, зеркалит ли он его форму.</p>
+</div>
+
+<div class="pair">
+<p class="en">Established procedures still name the legitimate departures from formal correspondence: transposition (change of grammatical form), modulation (change of viewpoint or conventional phrasing), equivalence (a different expression for a similar communicative effect, typical of idioms), and adaptation (adjustment of a reference to the target situation). Nida’s account likewise locates translation in interpretation within cultural context rather than in word-for-word substitution. A practical sequence follows: establish source meaning, referents, pragmatic force, and audience; render that meaning in target-language grammar and collocation; for idioms and culture-bound expressions, ask whether the target form preserves function; use sentence and document context; then review against both the source and target-language norms. A target-only fluency check misses meaning errors. A source-only literalness check penalizes valid, natural reformulation.</p>
+<p class="ru">Принятые приёмы по-прежнему называют правомерные отступления от формального соответствия: транспозиция (смена грамматической формы), модуляция (смена ракурса или узуальной формулировки), эквиваленция (иное выражение для сходного коммуникативного эффекта, типично для идиом) и адаптация (подстройка реалии к целевой ситуации). В трактовке Найды перевод также помещается в интерпретацию в культурном контексте, а не в пословную подстановку. Отсюда практическая последовательность: установить смысл оригинала, референты, прагматическую силу и аудиторию; передать этот смысл грамматикой и сочетаемостью языка перевода; для идиом и культурно связанных выражений проверить, сохраняет ли целевая форма функцию; опереться на контекст предложения и текста; затем сверить и с оригиналом, и с нормами языка перевода. Проверка одной лишь естественности целевого текста пропускает смысловые ошибки. Проверка одной лишь буквальности относительно оригинала наказывает правомерную естественную переформулировку.</p>
+</div>
+
+<div class="pair">
+<p class="en">Whether current AI systems are “less literal” is mixed, because studies differ in model, pair, genre, and definition of literality. GPT-3-era output was reported as less literal than NMT in several English-to-other-language settings, especially for idioms, with the explicit caution that less literal does not mean the idiom was translated correctly (Raunak, Menezes, Post and Hassan, 2023). Literary evaluation found human translations less syntactically similar to their sources, and more varied, than LLM output (Zhang, Zhao and Eger). Marmonier, Bawden and Sagot (2026), using a heuristic literality index on WMT24++ across 54 pairs, find that human references remain significantly less literal than NMT and most tested LLMs, though recent models narrow the gap. When prompted to revise themselves, those LLMs deliteralize step by step. As post-editors, however, they invert human triggers: they tolerate literal drafts and rewrite idiomatic human formulations. They can be made to sound less calqued without sharing a translator’s diagnostic.</p>
+<p class="ru">Данные о том, насколько современные системы ИИ «менее буквальны», неоднородны: исследования различаются моделью, языковой парой, жанром и определением буквальности. Для выхода эпохи GPT-3 сообщалось о меньшей буквальности, чем у нейронного МП, в ряде направлений с английского, особенно на идиомах, с явной оговоркой: меньшая буквальность не означает правильного перевода идиомы (Raunak, Menezes, Post и Hassan, 2023). При оценке художественного перевода человеческие переводы оказались синтаксически менее сходны с оригиналом и более разнообразны, чем выход больших языковых моделей (Zhang, Zhao и Eger). Marmonier, Bawden и Sagot (2026) по эвристическому индексу буквальности на WMT24++ для 54 пар устанавливают, что человеческие эталоны остаются значимо менее буквальными, чем нейронный МП и большинство проверенных больших языковых моделей, хотя недавние модели сокращают разрыв. При инструкции пересматривать собственный выход эти модели пошагово снижают буквальность. В роли постредакторов, однако, они инвертируют человеческие триггеры правки: допускают буквальные черновики и переписывают идиоматичные человеческие формулировки. Их можно заставить звучать менее калькированно, не разделяя при этом диагностический критерий переводчика.</p>
+</div>
+
+<h2 class="break">3. What a quality rating is / Что такое оценка качества</h2>
+
+<div class="pair">
+<p class="en">“Rating” may mean a human score, an error annotation, an automatic metric, or a measure of the work needed to make a draft usable. These answers are not interchangeable.</p>
+<p class="ru">Под «оценкой» могут иметь в виду человеческий балл, разметку ошибок, автоматическую метрику или меру труда, необходимого, чтобы сделать черновик пригодным. Эти ответы не взаимозаменяемы.</p>
+</div>
+
+<div class="pair">
+<p class="en">BLEU compares word-sequence overlap with references. It was proposed as a cheap, repeatable aid to human evaluation, not as a semantic test (Papineni, Roukos, Ward and Zhu, 2002). A translation may preserve meaning with different wording and still lose on overlap. Learned metrics such as COMET often track human judgments more closely in benchmark comparisons, but performance varies by language and task; no metric in a major “ship or not” comparison matched human judgments perfectly (Kocmi et al., 2021). A COMET number remains a model estimate.</p>
+<p class="ru">BLEU сравнивает перекрытие последовательностей слов с эталонами. Метрика предложена как дешёвое воспроизводимое подспорье человеческой оценке, а не как семантический тест (Papineni, Roukos, Ward и Zhu, 2002). Перевод может сохранить смысл иной формулировкой и всё же проиграть по перекрытию. Обученные метрики, в том числе COMET, на эталонных сравнениях чаще ближе к человеческим суждениям, однако результат зависит от языка и задачи; ни одна метрика в крупном сравнении «внедрять или нет» не совпала с человеческими оценками полностью (Kocmi и соавт., 2021). Число COMET остаётся модельной оценкой.</p>
+</div>
+
+<div class="pair">
+<p class="en">Multidimensional Quality Metrics (MQM) is useful when the question is what went wrong and how serious it is. It is a framework for declaring a taxonomy and severity scheme, not one universal weighted score (Lommel, Uszkoreit and Burchardt, 2014). Style may be central in literary or marketing text and secondary in a routine notice; terminology may be critical in technical or legal material. In a large study, professional, context-aware MQM evaluation ranked systems differently from crowd judgments (Freitag et al., 2021). In literary translation, complex error annotation by inexperienced evaluators can misread deliberate choice: with student annotators, Zhang, Zhao and Eger report that MQM treated nearly 60% of published human translations as indistinguishable from or inferior to MT, whereas simpler best–worst scaling identified the human translations at 80–100%. Automatic metrics in that study identified them at most about 20%. The instrument is part of the result.</p>
+<p class="ru">Многомерные метрики качества (MQM) полезны, когда вопрос состоит в том, что именно нарушено и насколько это серьёзно. Это рамка для задания таксономии и шкалы тяжести, а не один универсальный взвешенный балл (Lommel, Uszkoreit и Burchardt, 2014). Стиль может быть центральным в художественном или рекламном тексте и вторичным в шаблонном объявлении; терминология может быть критичной в техническом или юридическом материале. В крупном исследовании профессиональная, учитывающая контекст оценка по MQM ранжировала системы иначе, чем суждения толпы (Freitag и соавт., 2021). В художественном переводе сложная разметка ошибок неопытными оценщиками может неверно прочесть намеренный выбор: при студентах-разметчиках, по данным Zhang, Zhao и Eger, MQM отнесла почти 60% опубликованных человеческих переводов к не отличимым от МП или худшим, тогда как более простая шкала «лучший–худший» выявляла человеческие переводы в 80–100% случаев. Автоматические метрики в том же исследовании — не более чем примерно в 20%. Инструмент входит в результат.</p>
+</div>
+
+<h2>4. Current issues that matter to linguists / Текущие вопросы, существенные для лингвиста</h2>
+
+<div class="pair">
+<p class="en">One score can conceal a trade-off. Flamich, Vilar, Peter and Freitag (2025) formalize an accuracy–naturalness frontier and recommend reporting both dimensions. Their metric definitions are not a universal law of translation; the distinction is. A system that is accurate but stiff is not the same object as one that reads naturally and omits source detail.</p>
+<p class="ru">Один балл может скрыть компромисс. Flamich, Vilar, Peter и Freitag (2025) формализуют границу «точность — естественность» и рекомендуют сообщать оба измерения. Их определения метрик не являются всеобщим законом перевода; различие измерений — является. Система, точная, но неестественная по форме, — не тот же объект, что система, которая читается естественно и опускает детали оригинала.</p>
+</div>
+
+<div class="pair">
+<p class="en">Idioms expose metric bias. Marmonier, Sagot and Bawden (2026) pair English idiom-bearing sentences with both literal and idiomatic translations in nine languages. Most tested quality-estimation systems, including many LLM judges, scored the literal (calqued) versions higher. Only a small subset consistently preferred idiomatic translations. The benchmark is English-source and curated; it is enough to show that a higher automated score need not reward the intended meaning.</p>
+<p class="ru">Идиомы выявляют смещение метрик. Marmonier, Sagot и Bawden (2026) сопоставляют английские предложения с идиомами с буквальным и идиоматичным переводом на девять языков. Большинство проверенных систем оценки качества без эталона, включая многих судей на больших языковых моделях, выше оценивали буквальные (калькированные) варианты. Лишь небольшая часть устойчиво предпочитала идиоматичный перевод. Эталон англоязычный и подобранный; его достаточно, чтобы показать: более высокий автоматический балл не обязан вознаграждать намеченный смысл.</p>
+</div>
+
+<div class="pair">
+<p class="en">Fluency can mask serious errors. Hallucination research on multilingual translation models found substantially higher detected rates of detached or source-unrelated output in low-resource directions than in high-resource ones (Guerreiro et al., 2023). Smooth prose is not proof of fidelity. Resource level is a risk variable, not a footnote.</p>
+<p class="ru">Естественность формы может маскировать серьёзные ошибки. Исследования необоснованной генерации на многоязычных моделях перевода выявили существенно более высокие доли выхода, оторванного от оригинала или с ним не связанного, на низкоресурсных направлениях, чем на высокоресурсных (Guerreiro и соавт., 2023). Гладкая проза не есть доказательство верности. Уровень ресурса языка — переменная риска, а не сноска.</p>
+</div>
+
+<div class="pair">
+<p class="en">Context changes what can be judged. Sentence-level assessment can miss inconsistent terms, pronoun resolution, cohesion, and discourse meaning. In Chinese-to-English news, professional raters who saw whole documents preferred human translations on adequacy where sentence-level judgments had not (Läubli, Sennrich and Volk, 2018). Paragraph-level context improved human preference over sentence-isolated LLM literary translation, but errors and omissions remained (Karpinska and Iyyer, 2023).</p>
+<p class="ru">Контекст меняет то, что поддаётся оценке. Пофразовая оценка может пропустить рассогласование терминов, разрешение местоимений, связность и дискурсивный смысл. В новостном китайско-английском материале профессиональные оценщики, видевшие целые документы, предпочитали человеческий перевод по адекватности там, где пофразовые суждения этого не показали (Läubli, Sennrich и Volk, 2018). Контекст абзаца повысил предпочтение человека относительно изолированного по предложениям литературного перевода большой языковой моделью, однако ошибки и пропуски сохранялись (Karpinska и Iyyer, 2023).</p>
+</div>
+
+<div class="pair">
+<p class="en">Purpose changes the tolerance. Gisting, public communication, literary translation, and medical or legal use are different tasks. Reviews of medical and legal MT describe both access benefits and risks from consequential error, confidentiality, and uneven quality across languages (Vieira, O’Hagan and O’Sullivan, 2020). Fitness for getting the gist is not fitness for a consent form.</p>
+<p class="ru">Назначение меняет допустимость ошибки. Ознакомительный перевод, публичная коммуникация, художественный перевод и медицинское или юридическое применение — разные задачи. Обзоры медицинского и юридического МП описывают как выигрыш в доступе к содержанию, так и риски от ошибки с последствиями, нарушения конфиденциальности и неравномерного качества по языкам (Vieira, O’Hagan и O’Sullivan, 2020). Пригодность для извлечения общего смысла не есть пригодность для бланка согласия.</p>
+</div>
+
+<h2>5. What a linguist should report / Что следует сообщать лингвисту</h2>
+
+<div class="pair">
+<p class="en">For research or service comparison that asks whether translations convey meaning naturally rather than calquing source wording, a compact evaluation should report at least:</p>
+<p class="ru">Для исследования или сравнения услуг, в котором ставится вопрос, передают ли переводы смысл естественно, а не калькируя формулировку оригинала, в сжатой оценке следует сообщить по меньшей мере:</p>
+</div>
+
+<div class="pair">
+<p class="en"><strong>1.</strong> Meaning preservation: expert, source-visible adequacy, plus MQM-tagged major meaning errors (mistranslation, omission, addition).<br>
+<strong>2.</strong> Naturalness and idiomaticity: a separate target-language judgment, with explicit attention to idioms, collocations, register, and source-shaped syntax.<br>
+<strong>3.</strong> Context and consistency: document-level review of referents, terminology, discourse links, and voice.<br>
+<strong>4.</strong> Task fit: whether the text serves its intended audience and use, with risk-sensitive review for high-stakes content.<br>
+<strong>5.</strong> Workflow cost: post-editing time or effort when comparing service models, kept separate from output quality.<br>
+<strong>6.</strong> Automatic scores: BLEU, ChrF, COMET, or quality-estimation scores as supporting evidence, never as a substitute for the dimensions above.</p>
+<p class="ru"><strong>1.</strong> Сохранение смысла: экспертная адекватность при видимом оригинале и крупные смысловые ошибки по MQM (искажение, пропуск, добавление).<br>
+<strong>2.</strong> Естественность и идиоматичность: отдельное суждение по языку перевода, с явным вниманием к идиомам, сочетаемости, регистру и синтаксису, копирующему оригинал.<br>
+<strong>3.</strong> Контекст и согласованность: оценка на уровне текста — референты, терминология, дискурсивные связи, голос.<br>
+<strong>4.</strong> Соответствие задаче: обслуживает ли текст намеченную аудиторию и назначение, с рискочувствительной проверкой для материалов высокой ставки.<br>
+<strong>5.</strong> Стоимость процесса: время или трудозатраты постредактирования при сравнении моделей услуги, отдельно от качества выхода.<br>
+<strong>6.</strong> Автоматические оценки: BLEU, ChrF, COMET или оценка качества без эталона — как вспомогательные данные, никогда как замена измерениям выше.</p>
+</div>
+
+<div class="pair">
+<p class="en">Any claim of quality should state whose judgment was used, what the rating measured, and whether raters saw the source and the surrounding document.</p>
+<p class="ru">Любое утверждение о качестве должно указывать, чьё суждение использовано, что именно измеряла оценка и видели ли оценщики оригинал и окружающий документ.</p>
+</div>
+
+<h2>6. Close / Заключение</h2>
+
+<div class="pair">
+<p class="en">The current state of machine translation, for a linguist, is this. Neural and prompted models produce target language that often sounds finished. They have not absorbed translation procedures as a theory of meaning. They remain more literal than published human translation on current evidence; they can be pushed toward less literal wording without thereby choosing the right idiom; and the automatic judges that were meant to replace the linguist often prefer the calque. Keep automated scores for screening. Keep linguists for meaning, idiom, and use.</p>
+<p class="ru">Для лингвиста современное состояние машинного перевода таково. Нейронные модели и модели, работающие по текстовой инструкции, порождают язык перевода, который часто звучит как законченный текст. Они не усвоили переводческие приёмы как теорию смысла. По имеющимся данным они остаются более буквальными, чем опубликованный человеческий перевод; их можно подтолкнуть к менее буквальной формулировке, не выбирая тем самым верную идиому; автоматические судьи, которым отводилась замена лингвиста, часто предпочитают кальку. Автоматические оценки оставляют для первичного отбора. Лингвиста оставляют для смысла, идиомы и назначения текста.</p>
+</div>
+
+<h2 id="comments" class="break">Комментарии</h2>
+<ul class="notes">
+<li><em>Takeaway</em> → «главный вывод», не «тейкавей».</li>
+<li><em>Screening tools</em> → «средство первичного отбора», не «скрининг» в медицинском смысле.</li>
+<li><em>Fitness for purpose / task fit</em> — один термин на весь текст: «соответствие назначению» / «соответствие задаче».</li>
+<li><em>Leaderboard</em> → «таблица лидеров на эталоне», не «лидерборд».</li>
+<li><em>Prompted / instruction following</em> → «по текстовой инструкции»; «промпт» в научном регистре не обязателен.</li>
+<li><em>Equivalence</em> (Vinay и Darbelnet) → «эквиваленция», не общая «эквивалентность».</li>
+<li><em>Hallucination</em> → «необоснованная генерация; отрыв от исходника», не «галлюцинация» как клинический термин и не «ложь».</li>
+<li><em>Stiff</em> → «неестественный по форме»; в паре <em>accurate but stiff</em>.</li>
+<li><em>Diagnostic</em> → «диагностический критерий переводчика», не «диагноз».</li>
+<li><em>Ship or not</em> (Kocmi) → «внедрять или нет».</li>
+<li><em>Best–worst scaling</em> → «шкала „лучший–худший“».</li>
+<li><em>From-scratch</em> → «с нуля»; не калька «с царапины».</li>
+<li><em>Trade-off</em> — один раз выбран «компромисс» (в духе «смена компромиссов» Ataman et al.).</li>
+<li>Marmonier et al. (2026) — препринты; в переводе сохранена осторожность оригинала (<em>on current evidence</em> → «по имеющимся данным»).</li>
+<li><em>Human-centered MT</em> → «человекоцентричный машинный перевод» (как в Carpuat et al., без «человеко-ориентированный» как второго синонима).</li>
+</ul>
+
+<h2 id="dict">Словарь</h2>
+<table class="dict">
+<thead>
+<tr><th>English</th><th>Русский</th><th>Помета</th><th>Источник</th></tr>
+</thead>
+<tbody>
+<tr><td>takeaway</td><td>главный вывод</td><td>не «тейкавей»</td><td>доклад МП</td></tr>
+<tr><td>machine translation</td><td>машинный перевод</td><td>задача, не бренд</td><td>доклад МП</td></tr>
+<tr><td>neural machine translation</td><td>нейронный машинный перевод</td><td>не любой LLM</td><td>доклад МП</td></tr>
+<tr><td>large language model</td><td>большая языковая модель</td><td>расшифровать при первом вхождении</td><td>доклад МП</td></tr>
+<tr><td>post-editing</td><td>постредактирование</td><td>трудозатраты ≠ качество</td><td>доклад МП</td></tr>
+<tr><td>from-scratch translation</td><td>перевод с нуля</td><td>не «с царапины»</td><td>доклад МП</td></tr>
+<tr><td>trade-off</td><td>компромисс</td><td>accuracy vs naturalness</td><td>доклад МП</td></tr>
+<tr><td>screening</td><td>первичный отбор</td><td>не мед. «скрининг»</td><td>доклад МП</td></tr>
+<tr><td>calque</td><td>калька</td><td>не запрет близкого перевода</td><td>доклад МП</td></tr>
+<tr><td>transposition</td><td>транспозиция</td><td>Vinay / Darbelnet</td><td>доклад МП</td></tr>
+<tr><td>modulation</td><td>модуляция</td><td>смена ракурса</td><td>доклад МП</td></tr>
+<tr><td>equivalence</td><td>эквиваленция</td><td>не «эквивалентность» вообще</td><td>доклад МП</td></tr>
+<tr><td>adaptation</td><td>адаптация</td><td>подстройка реалии</td><td>доклад МП</td></tr>
+<tr><td>adequacy</td><td>адекватность (передача смысла)</td><td>при видимом оригинале</td><td>доклад МП</td></tr>
+<tr><td>fluency</td><td>естественность формы</td><td>не доказывает верность</td><td>доклад МП</td></tr>
+<tr><td>naturalness</td><td>естественность; идиоматичность</td><td>отдельно от accuracy</td><td>доклад МП</td></tr>
+<tr><td>literality</td><td>буквальность; калькирование</td><td>эвристика, не полное качество</td><td>доклад МП</td></tr>
+<tr><td>deliteralization</td><td>снижение буквальности при правке</td><td>черновик → редакция</td><td>доклад МП</td></tr>
+<tr><td>MQM</td><td>многомерные метрики качества</td><td>рамка, не один балл</td><td>доклад МП</td></tr>
+<tr><td>BLEU</td><td>BLEU; перекрытие n-грамм</td><td>не семантический тест</td><td>доклад МП</td></tr>
+<tr><td>COMET</td><td>COMET; обученная оценка МП</td><td>модельная оценка</td><td>доклад МП</td></tr>
+<tr><td>quality estimation</td><td>оценка качества без эталона</td><td>QE</td><td>доклад МП</td></tr>
+<tr><td>hallucination</td><td>необоснованная генерация</td><td>отрыв от исходника</td><td>доклад МП</td></tr>
+<tr><td>gisting</td><td>ознакомительный перевод</td><td>извлечение общего смысла</td><td>доклад МП</td></tr>
+<tr><td>document-level evaluation</td><td>оценка на уровне текста</td><td>не пофразовая</td><td>доклад МП</td></tr>
+<tr><td>fitness for purpose</td><td>соответствие назначению</td><td>= task fit</td><td>доклад МП</td></tr>
+<tr><td>leaderboard</td><td>таблица лидеров на эталоне</td><td>не «лидерборд»</td><td>доклад МП</td></tr>
+<tr><td>prompted model</td><td>модель по текстовой инструкции</td><td>не обязателен «промпт»</td><td>доклад МП</td></tr>
+<tr><td>best–worst scaling</td><td>шкала «лучший–худший»</td><td>BWS</td><td>доклад МП</td></tr>
+<tr><td>collocation</td><td>сочетаемость; коллокация</td><td>узус, не «коллаборация»</td><td>доклад МП</td></tr>
+<tr><td>register</td><td>регистр</td><td>стилистический</td><td>доклад МП</td></tr>
+<tr><td>cohesion</td><td>связность</td><td>дискурс</td><td>доклад МП</td></tr>
+<tr><td>low-resource</td><td>низкоресурсный (язык / направление)</td><td>риск отрыва от оригинала</td><td>доклад МП</td></tr>
+<tr><td>human-centered MT</td><td>человекоцентричный машинный перевод</td><td>Carpuat et al.</td><td>доклад МП</td></tr>
+<tr><td>situated decision-making</td><td>ситуативное принятие решений</td><td>переводоведение</td><td>доклад МП</td></tr>
+</tbody>
+</table>
+
+<footer>
+Печать: альбом A4. Карточки: MT_talk_cards.html. Слайды: MT_current_state_slides.html.
+</footer>
+</div>
+</body>
+</html>
