@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Translation Technology and Quality</title>
+<style>
+  :root {
+    --ink: #1c1916;
+    --muted: #5f584f;
+    --line: #e4ddd3;
+    --paper: #f7f4ee;
+    --card: #fffdf9;
+    --accent: #8a4b2f;
+    --focus: #8a4b2f;
+  }
+  html[data-theme="dark"] {
+    --ink: #f3efe8;
+    --muted: #b1a89c;
+    --line: #34302b;
+    --paper: #141210;
+    --card: #1d1a17;
+    --accent: #e4b89a;
+    --focus: #e4b89a;
+    color-scheme: dark;
+  }
+  html[data-theme="light"] { color-scheme: light; }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      --ink: #f3efe8;
+      --muted: #b1a89c;
+      --line: #34302b;
+      --paper: #141210;
+      --card: #1d1a17;
+      --accent: #e4b89a;
+      --focus: #e4b89a;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    padding:
+      calc(28px + env(safe-area-inset-top, 0px))
+      20px
+      calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+  .wrap { max-width: 42rem; margin: 0 auto; }
+  h1 {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: clamp(2rem, 6vw, 3.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+  }
+  h2 {
+    margin: 2.2rem 0 0.7rem;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    scroll-margin-top: 16px;
+  }
+  h3 {
+    margin: 0 0 0.35rem;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 1.08rem;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  p { margin: 0 0 0.95rem; }
+  .date { margin: 0.7rem 0 0; color: var(--muted); font-family: "Segoe UI", Arial, sans-serif; font-size: 0.95rem; }
+  .top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 14px;
+  }
+  .theme {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 0.95rem;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .theme:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 1.3rem 0 0.4rem;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
+  .toc a {
+    color: var(--ink);
+    text-decoration: none;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 0.92rem;
+    line-height: 1.3;
+  }
+  a { color: var(--accent); overflow-wrap: anywhere; }
+  .cite { text-decoration: none; font-family: "Segoe UI", Arial, sans-serif; font-size: 0.86em; }
+  ul, ol { margin: 0 0 1rem; padding-left: 1.25rem; }
+  li { margin: 0.45rem 0; padding-left: 0.15rem; }
+  .cards { display: flex; flex-direction: column; gap: 12px; margin: 0.4rem 0 1.2rem; }
+  .cards article {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+  }
+  .cards p { margin: 0.35rem 0 0.15rem; }
+  .label {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .refs { list-style: none; padding: 0; }
+  .ref {
+    margin: 0;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--line);
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .refn { font-family: "Segoe UI", Arial, sans-serif; font-weight: 600; }
+  @media (max-width: 640px) {
+    body { font-size: 1.05rem; padding-left: 16px; padding-right: 16px; }
+    h1 { font-weight: 600; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><button class="theme" type="button" id="theme"></button></div>
+  <h1>Translation Technology and Quality</h1>
+<p class="date">November 15, 2026</p>
+<nav class="toc" aria-label="Contents">
+<a href="#translation-technology-meaning-and-quality">Translation Technology, Meaning, and Quality</a>
+<a href="#scope-and-main-conclusion">Scope and main conclusion</a>
+<a href="#translation-technologies-and-services">Translation technologies and services</a>
+<a href="#conveying-meaning-without-calques">Conveying meaning without calques</a>
+<a href="#what-translation-quality-ratings-are-available">What translation quality ratings are available?</a>
+<a href="#current-issues-for-ai-translation-and-evaluation">Current issues for AI translation and evaluation</a>
+<a href="#a-practical-quality-rating-set">A practical quality-rating set</a>
+<a href="#references">References</a>
+</nav>
+<h2 id="translation-technology-meaning-and-quality">Translation Technology, Meaning, and Quality</h2>
+<h2 id="scope-and-main-conclusion">Scope and main conclusion</h2>
+<p>Translation quality is not a single property. A useful translation must preserve the source’s intended meaning, express it naturally in the target language, and fit its audience and use. These aims can pull in different directions, so a fluent sentence is not necessarily faithful, and a close rendering is not necessarily the best translation. Research on machine translation (MT) increasingly supports evaluating these dimensions separately rather than treating one score as a complete verdict <a class="cite" href="#r-1">[1]</a>, <a class="cite" href="#r-2">[2]</a>.</p>
+<p>This report draws on the workspace search <em>Translation Technology and Meaning</em>, completed November 15, 2026. Its evidence ranges from foundational translation theory and MT evaluation to recent studies of large language models (LLMs), idioms, and human–AI workflows. The strongest practical conclusion is to treat automated scores as screening and comparison tools, then judge meaning, idiomaticity, and fitness for purpose with methods suited to the text and users.</p>
+<h2 id="translation-technologies-and-services">Translation technologies and services</h2>
+<p>Translation technology has changed from hand-built linguistic rules to systems that learn from translated text, and now to general-purpose language models. Each shift expands what can be automated, but none removes the need to check meaning, context, and target-language use. This is a history of changing tradeoffs, not a simple march toward error-free translation <a class="cite" href="#r-3">[3]</a>.</p>
+<div class="cards">
+<article>
+<h3>Human translation with computer-assisted tools</h3>
+<p><span class="label">What it contributes</span>Translation memories, terminology resources, and other computer-assisted translation tools can support consistency and reduce repetitive work while leaving choices with the translator <a class="cite" href="#r-4">[4]</a>.</p>
+<p><span class="label">Main limits or service implications</span>Tools do not determine whether a stored phrase fits the present context, audience, or intent.</p>
+</article>
+<article>
+<h3>Rule-based MT</h3>
+<p><span class="label">What it contributes</span>Uses dictionaries and explicit linguistic rules; transfer and interlingua designs represent grammatical structure or meaning between languages <a class="cite" href="#r-3">[3]</a>.</p>
+<p><span class="label">Main limits or service implications</span>Rules and linguistic resources take substantial effort to build and maintain, and can be difficult to scale across languages and domains.</p>
+</article>
+<article>
+<h3>Statistical MT</h3>
+<p><span class="label">What it contributes</span>Learns likely word and phrase correspondences from parallel texts; phrase-based systems can model some local reordering <a class="cite" href="#r-3">[3]</a>.</p>
+<p><span class="label">Main limits or service implications</span>Limited context and difficulty with long-range structure, rare expressions, and semantic nuance.</p>
+</article>
+<article>
+<h3>Neural MT</h3>
+<p><span class="label">What it contributes</span>Learns end-to-end mappings; attention and Transformers improve contextual processing, while multilingual and pretrained models extend coverage <a class="cite" href="#r-3">[3]</a>.</p>
+<p><span class="label">Main limits or service implications</span>Data imbalance, domain shift, and difficult language directions persist. Fluency does not guarantee source fidelity.</p>
+</article>
+<article>
+<h3>LLM-based translation</h3>
+<p><span class="label">What it contributes</span>Prompted models can translate with little task-specific training and can follow instructions about tone, style, or audience <a class="cite" href="#r-3">[3]</a>.</p>
+<p><span class="label">Main limits or service implications</span>Prompt sensitivity, omissions, additions, hallucinations, and uneven language performance remain concerns; specialized MT may still offer efficiency, terminology control, or consistency.</p>
+</article>
+<article>
+<h3>Human–AI workflows</h3>
+<p><span class="label">What it contributes</span>Translators may use MT or LLM suggestions, then review, revise, or reject them; post-editing can save time in some settings <a class="cite" href="#r-5">[5]</a>, <a class="cite" href="#r-6">[6]</a>.</p>
+<p><span class="label">Main limits or service implications</span>Productivity and quality gains depend on the system, text, language pair, and editor. A poor draft can take longer to repair than to translate from scratch.</p>
+</article>
+</div>
+<p>In professional services, the relevant choice is often not “human or machine” but which tasks to automate, what review to require, and who is accountable for the final text. A review of post-editing research found that gains vary: some studies report faster work, while others find little or no time benefit. Error type matters too; mistranslated idioms and word-order problems can demand more effort than simple form edits <a class="cite" href="#r-5">[5]</a>. In one small English-to-Chinese student study, post-editing lowered measured pausing and improved some assessments of raw MT, but raters still preferred from-scratch translations more often. The authors caution that the sample was limited and the participants were not experienced professional translators <a class="cite" href="#r-7">[7]</a>. These findings argue against treating an average productivity figure as a guarantee for a particular service or project.</p>
+<h2 id="conveying-meaning-without-calques">Conveying meaning without calques</h2>
+<p>Avoiding calques does not mean avoiding literal translation whenever possible. The problem is a rendering that follows source-language wording or structure so closely that it sounds unnatural, misstates the intended sense, or fails in its target context. The relevant test is whether the translation preserves what the source is doing—not whether it mirrors its form.</p>
+<p>Established translation procedures make room for that distinction. <strong>Transposition</strong> changes grammatical form; <strong>modulation</strong> changes the conceptual viewpoint or phrasing; <strong>equivalence</strong> uses a different target-language expression for a similar communicative effect; and <strong>adaptation</strong> adjusts a reference or formulation to the target context. These are ways to depart from formal correspondence while seeking to preserve meaning <a class="cite" href="#r-8">[8]</a>, <a class="cite" href="#r-9">[9]</a>. Nida’s account likewise emphasizes interpretation within cultural context, rather than word-for-word substitution <a class="cite" href="#r-10">[10]</a>.</p>
+<p>A practical sequence follows from this literature:</p>
+<ol>
+<li>Establish the source meaning, referents, pragmatic force, and intended audience before choosing target wording.</li>
+<li>Render that meaning using target-language grammar and conventional phrasing, even when this requires a different word class, image, or sentence structure.</li>
+<li>For idioms, metaphors, and culture-bound expressions, check whether the target form preserves the intended function; a literal version may be appropriate only when the image itself matters and remains intelligible.</li>
+<li>Use sentence and document context to resolve ambiguity, maintain terminology, and preserve voice and discourse links. In literary translation experiments, paragraph-level context improved human preferences over sentence-isolated LLM translation, but errors and omissions remained <a class="cite" href="#r-11">[11]</a>.</li>
+<li>Review the final text against both the source and target-language norms. A target-only fluency check can miss meaning errors; a source-only literalness check can penalize valid, natural reformulations.</li>
+</ol>
+<p>Evidence on whether AI systems are less literal is mixed, in part because studies test different models, language pairs, genres, and definitions of literality. One study found GPT-3-era outputs tended to be less literal than NMT in several English-to-other-language settings, especially for idioms, but explicitly cautioned that being less literal does not prove that an idiom’s meaning was translated correctly <a class="cite" href="#r-12">[12]</a>. A literary-translation study found human translations less syntactically similar to their sources and more varied than LLM outputs, which it interpreted as evidence that the tested machines remained more literal <a class="cite" href="#r-13">[13]</a>. A 2026 study using a heuristic literality index found that several tested LLMs became less literal through iterative revision, but its data were English-source and the index is not a complete measure of translation quality <a class="cite" href="#r-14">[14]</a>. The evidence therefore supports checking for calques and source-shaped phrasing, not assuming that any system or style of prompting will reliably avoid them.</p>
+<h2 id="what-translation-quality-ratings-are-available">What translation quality ratings are available?</h2>
+<p>The word “rating” can refer to several different things: a human score, a categorized error record, an automatic metric, or a measure of the work required to make a translation usable. They answer different questions and should not be treated as interchangeable.</p>
+<div class="cards">
+<article>
+<h3>Adequacy or accuracy rating</h3>
+<p><span class="label">What it records</span>How well the translation conveys source meaning. Often paired with a separate fluency rating <a class="cite" href="#r-15">[15]</a>.</p>
+<p><span class="label">Useful for</span>Comparing meaning transfer, especially when raters can see the source.</p>
+<p><span class="label">Main caution</span>A single adequacy score can hide which meaning errors occurred and how serious they are.</p>
+</article>
+<article>
+<h3>Fluency or naturalness rating</h3>
+<p><span class="label">What it records</span>How idiomatic and well-formed the target text seems.</p>
+<p><span class="label">Useful for</span>Assessing readability and target-language expression.</p>
+<p><span class="label">Main caution</span>Without the source, it cannot establish faithfulness. Ratings can also depend on genre and audience.</p>
+</article>
+<article>
+<h3>Scalar quality rating or direct assessment</h3>
+<p><span class="label">What it records</span>A holistic human score or judgment, such as a numeric rating or “better/worse” comparison <a class="cite" href="#r-15">[15]</a>, <a class="cite" href="#r-16">[16]</a>.</p>
+<p><span class="label">Useful for</span>Efficient comparison of systems or outputs at scale.</p>
+<p><span class="label">Main caution</span>Scores depend on instructions, raters, context, and calibration; a number is not a universal quality scale.</p>
+</article>
+<article>
+<h3>Pairwise ranking or best–worst scaling</h3>
+<p><span class="label">What it records</span>Which of several translations is preferred, or which are best and worst.</p>
+<p><span class="label">Useful for</span>Comparing strong alternatives when absolute scoring is hard.</p>
+<p><span class="label">Main caution</span>Gives less diagnostic information about what to fix; literary evaluations show that evaluator expertise and task design can shift results <a class="cite" href="#r-13">[13]</a>.</p>
+</article>
+<article>
+<h3>MQM error annotation</h3>
+<p><span class="label">What it records</span>Error spans categorized under a configurable taxonomy, such as accuracy, fluency, terminology, or style; severity can also be recorded <a class="cite" href="#r-1">[1]</a>.</p>
+<p><span class="label">Useful for</span>Diagnosing errors and prioritizing revisions. Professional, context-aware MQM evaluation produced different system rankings from crowd judgments in a large study <a class="cite" href="#r-16">[16]</a>.</p>
+<p><span class="label">Main caution</span>More labor-intensive; categories and weights must fit the task. MQM is a framework, not one universal score.</p>
+</article>
+<article>
+<h3>Post-editing effort</h3>
+<p><span class="label">What it records</span>Time, edits, keystrokes, pauses, or other process measures needed to make output usable <a class="cite" href="#r-5">[5]</a>.</p>
+<p><span class="label">Useful for</span>Estimating workflow cost and identifying difficult text or error types.</p>
+<p><span class="label">Main caution</span>Effort is not the same as final quality; edit counts, time, and cognitive effort are not interchangeable.</p>
+</article>
+<article>
+<h3>Reference-based automatic metrics</h3>
+<p><span class="label">What it records</span>Similarity to one or more human references. BLEU uses word n-gram overlap; ChrF uses character n-grams; learned metrics such as COMET use model representations trained or assessed against human judgments <a class="cite" href="#r-17">[17]</a>, <a class="cite" href="#r-18">[18]</a>, <a class="cite" href="#r-19">[19]</a>.</p>
+<p><span class="label">Useful for</span>Fast, repeatable system comparison and development monitoring.</p>
+<p><span class="label">Main caution</span>Valid paraphrases may differ from references; scores do not directly verify meaning, naturalness, or task suitability.</p>
+</article>
+<article>
+<h3>Reference-free quality estimation</h3>
+<p><span class="label">What it records</span>Predicts likely quality without a reference translation; may help route outputs for review <a class="cite" href="#r-20">[20]</a>.</p>
+<p><span class="label">Useful for</span>Triage when a reference is unavailable.</p>
+<p><span class="label">Main caution</span>A confident score can still reflect bias. A 2026 idiom benchmark found many tested metrics and LLM judges preferred literal over idiomatic translations.</p>
+</article>
+</div>
+<p>BLEU is a clear example of both the value and limits of automatic scoring. It compares word-sequence overlap with references and was proposed as a quick, repeatable aid to human evaluation—not a direct semantic test. A translation can preserve meaning with different wording and still receive a lower overlap score <a class="cite" href="#r-17">[17]</a>. Newer learned metrics often align more closely with human judgments in benchmark comparisons, but performance varies across languages and tasks; no metric in a major comparison matched human judgments perfectly <a class="cite" href="#r-18">[18]</a>. COMET, for example, predicts human-derived quality signals and performs strongly on several benchmarks, but its score remains a model estimate, not a human review or guarantee of correctness <a class="cite" href="#r-19">[19]</a>.</p>
+<p>MQM is useful when the question is not just “Which output scored higher?” but “What went wrong, and how serious is it?” It lets a project define an error taxonomy and severity scheme for its needs rather than imposing one set of weights on every text. The distinction matters: a style issue may be central in marketing copy or literary work and secondary in a routine service notice; a terminology error may be critical in technical or legal material <a class="cite" href="#r-1">[1]</a>. For literary translation in particular, complex error annotation by inexperienced evaluators can misjudge deliberate choices; professional judgment or simpler comparative tasks may be more suitable <a class="cite" href="#r-13">[13]</a>.</p>
+<h2 id="current-issues-for-ai-translation-and-evaluation">Current issues for AI translation and evaluation</h2>
+<p><strong>One score can conceal a tradeoff.</strong> Accuracy and naturalness are often combined into a single quality number, though they are distinct aims. A 2025 study formalizes an accuracy–naturalness frontier and recommends reporting both dimensions; the precise tradeoff depends on its metric definitions and reference distribution, so its framework should not be read as a universal law for every translation task <a class="cite" href="#r-2">[2]</a>. For practical evaluation, separate scores are more informative than a single blended rank.</p>
+<p><strong>Idioms expose metric bias.</strong> A 2026 benchmark found that many tested automatic quality-estimation systems, including LLM judges, scored literal idiom translations above idiomatic ones. Only a small subset of the tested systems consistently preferred idiomatic translations across its nine target languages. The benchmark is limited to English-source idioms and curated examples, but it shows why higher automated scores should not be assumed to reward the intended meaning <a class="cite" href="#r-20">[20]</a>.</p>
+<p><strong>Fluency can mask serious errors.</strong> Hallucination research on multilingual translation models found substantially higher detected rates in low-resource directions than in high-resource ones, with detached or source-unrelated outputs among the failure types. Rates depend on the models and detection method in that study, but the broader warning is important: smooth output is not proof of fidelity, and language-resource levels affect risk <a class="cite" href="#r-21">[21]</a>.</p>
+<p><strong>Context changes what can be judged.</strong> Sentence-level assessment can miss inconsistent terms, pronoun resolution, cohesion, or discourse meaning. In one Chinese-to-English news study, professional raters who saw whole documents preferred human translations over MT on adequacy, where sentence-level judgments had not shown a significant preference <a class="cite" href="#r-22">[22]</a>. Contextual prompting helps some LLM translation tasks, but does not remove omissions or critical mistakes <a class="cite" href="#r-11">[11]</a>.</p>
+<p><strong>Quality depends on purpose and stakes.</strong> Gisting, public communication, literary translation, and medical or legal use have different error tolerances. A translation fit for getting the gist may not be fit for a consent form or legal proceeding. Reviews of medical and legal MT describe both access benefits and risks from consequential errors, confidentiality, and uneven quality across languages; they support deployment rules and review based on the actual use, not a generic benchmark score <a class="cite" href="#r-23">[23]</a>. Human-centered MT research similarly argues for evaluating systems within real tasks and retaining meaningful human control <a class="cite" href="#r-6">[6]</a>.</p>
+<h2 id="a-practical-quality-rating-set">A practical quality-rating set</h2>
+<p>For a service or research comparison intended to test whether translations convey meaning naturally rather than calque source wording, a compact evaluation should report at least:</p>
+<ul>
+<li><strong>Meaning preservation:</strong> expert, source-visible adequacy judgments plus MQM-tagged major meaning errors such as mistranslation or omission.</li>
+<li><strong>Naturalness and idiomaticity:</strong> a separate target-language judgment, with explicit attention to idioms, collocations, register, and source-shaped syntax.</li>
+<li><strong>Context and consistency:</strong> document-level review of referents, terminology, discourse links, and voice.</li>
+<li><strong>Task fit:</strong> whether the text serves its intended audience and use, including risk-sensitive review for high-stakes content.</li>
+<li><strong>Workflow cost:</strong> post-editing time or effort when comparing service models, kept separate from output quality.</li>
+<li><strong>Automatic scores:</strong> BLEU, ChrF, COMET, or quality-estimation scores as supporting evidence, not as a substitute for the dimensions above.</li>
+</ul>
+<p>This combination makes disagreements informative. A system that is accurate but stiff differs from one that reads naturally but omits source details; a single score can hide the distinction. The right balance depends on the intended translation service, but any claim of quality should make clear whose judgment was used, what the rating measured, and whether raters saw the source and surrounding context <a class="cite" href="#r-1">[1]</a>, <a class="cite" href="#r-2">[2]</a>, <a class="cite" href="#r-16">[16]</a>.</p>
+<h2 id="references">References</h2>
+<ol class="refs">
+<li class="ref"><span class="refn" id="r-1">[1]</span> A. Lommel, H. Uszkoreit, and A. Burchardt, “Multidimensional Quality Metrics (MQM): A Framework for Declaring and Describing Translation Quality Metrics,” Dec. 30, 2014. doi: <a href="https://doi.org/10.5565/REV/TRADUMATICA.77">10.5565/REV/TRADUMATICA.77</a>.</li>
+<li class="ref"><span class="refn" id="r-2">[2]</span> G. Flamich, D. Vilar, J.-T. Peter, and M. Freitag, “You Cannot Feed Two Birds with One Score: the Accuracy-Naturalness Tradeoff in Translation,” <em>ArXiv</em>, vol. abs/2503.24013, Mar. 2025, doi: <a href="https://doi.org/10.48550/arXiv.2503.24013">10.48550/arXiv.2503.24013</a>.</li>
+<li class="ref"><span class="refn" id="r-3">[3]</span> D. Ataman, A. Birch, N. Habash, M. Federico, P. Koehn, and K. Cho, “Machine Translation in the Era of Large Language Models:A Survey of Historical and Emerging Problems,” <em>Inf.</em>, vol. 16, p. 723, Aug. 2025, doi: <a href="https://doi.org/10.3390/info16090723">10.3390/info16090723</a>.</li>
+<li class="ref"><span class="refn" id="r-4">[4]</span> S. O’Brien, “Human-Centered augmented translation: against antagonistic dualisms,” <em>Perspectives</em>, vol. 32, pp. 391–406, Aug. 2023, doi: <a href="https://doi.org/10.1080/0907676X.2023.2247423">10.1080/0907676X.2023.2247423</a>.</li>
+<li class="ref"><span class="refn" id="r-5">[5]</span> M. Koponen, “Is machine translation post-editing worth the effort? A survey of research into post-editing and effort,” <em>The Journal of Specialised Translation</em>, Jan. 2016, doi: <a href="https://doi.org/10.26034/cm.jostrans.2016.303">10.26034/cm.jostrans.2016.303</a>.</li>
+<li class="ref"><span class="refn" id="r-6">[6]</span> M. Carpuat <em>et al.</em>, “An Interdisciplinary Approach to Human-Centered Machine Translation,” <em>Conference on Empirical Methods in Natural Language Processing</em>, pp. 22859–22879, Jun. 2025, doi: <a href="https://doi.org/10.48550/arXiv.2506.13468">10.48550/arXiv.2506.13468</a>.</li>
+<li class="ref"><span class="refn" id="r-7">[7]</span> Y.-F. Jia, M. Carl, and X.-L. Wang, “How does the post-editing of Neural Machine Translation compare with from-scratch translation? A product and process study,” <em>The Journal of Specialised Translation</em>, Jan. 2019, doi: <a href="https://doi.org/10.26034/cm.jostrans.2019.177">10.26034/cm.jostrans.2019.177</a>.</li>
+<li class="ref"><span class="refn" id="r-8">[8]</span> J. Waliński, “Translation Procedures,” 2008.</li>
+<li class="ref"><span class="refn" id="r-9">[9]</span> C. R. Gagne and E. Wilton-Godberfforde, “Transposition and modulation,” Dec. 16, 2020. doi: <a href="https://doi.org/10.4324/9781315731933-2">10.4324/9781315731933-2</a>.</li>
+<li class="ref"><span class="refn" id="r-10">[10]</span> E. Nida, “Toward a science of translating,” Jun. 01, 1964.</li>
+<li class="ref"><span class="refn" id="r-11">[11]</span> M. Karpinska and M. Iyyer, “Large Language Models Effectively Leverage Document-level Context for Literary Translation, but Critical Errors Persist,” <em>Conference on Machine Translation</em>, pp. 419–451, Apr. 2023, doi: <a href="https://doi.org/10.48550/arXiv.2304.03245">10.48550/arXiv.2304.03245</a>.</li>
+<li class="ref"><span class="refn" id="r-12">[12]</span> V. Raunak, A. Menezes, M. Post, and H. Hassan, “Do GPTs Produce Less Literal Translations?” <em>ArXiv</em>, vol. abs/2305.16806, May 2023, doi: <a href="https://doi.org/10.48550/arXiv.2305.16806">10.48550/arXiv.2305.16806</a>.</li>
+<li class="ref"><span class="refn" id="r-13">[13]</span> R. Zhang, W. Zhao, and S. Eger, “How Good Are LLMs for Literary Translation, Really? Literary Translation Evaluation with Humans and LLMs,” <em>North American Chapter of the</em><em> Association for Computational Linguistics</em>, pp. 10961–10988, Oct. 2024, doi: <a href="https://doi.org/10.48550/arXiv.2410.18697">10.48550/arXiv.2410.18697</a>.</li>
+<li class="ref"><span class="refn" id="r-14">[14]</span> M. Marmonier, R. Bawden, and B. Sagot, “Testing the Deliteralization Hypothesis in Human and Machine Translation,” <em>ArXiv</em>, vol. abs/2605.25686, May 2026, doi: <a href="https://doi.org/10.48550/arXiv.2605.25686">10.48550/arXiv.2605.25686</a>.</li>
+<li class="ref"><span class="refn" id="r-15">[15]</span> E. Chatzikoumi, “How to evaluate machine translation: A review of automated and human metrics,” <em>Natural Language Engineering</em>, vol. 26, pp. 137–161, Sep. 2019, doi: <a href="https://doi.org/10.1017/S1351324919000469">10.1017/S1351324919000469</a>.</li>
+<li class="ref"><span class="refn" id="r-16">[16]</span> M. Freitag, G. F. Foster, D. Grangier, V. Ratnakar, Q. Tan, and W. Macherey, “Experts, Errors, and Context: A Large-Scale Study of Human Evaluation for Machine Translation,” <em>Transactions of the Association for Computational Linguistics</em>, vol. 9, pp. 1460–1474, Apr. 2021, doi: <a href="https://doi.org/10.1162/tacl_a_00437">10.1162/tacl_a_00437</a>.</li>
+<li class="ref"><span class="refn" id="r-17">[17]</span> K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu, “Bleu: a Method for Automatic Evaluation of Machine Translation,” <em>Annual Meeting of the Association for Computational Linguistics</em>, pp. 311–318, Jul. 2002, doi: <a href="https://doi.org/10.3115/1073083.1073135">10.3115/1073083.1073135</a>.</li>
+<li class="ref"><span class="refn" id="r-18">[18]</span> T. Kocmi, C. Federmann, R. Grundkiewicz, M. Junczys-Dowmunt, H. Matsushita, and A. Menezes, “To Ship or Not to Ship: An Extensive Evaluation of Automatic Metrics for Machine Translation,” <em>ArXiv</em>, vol. abs/2107.10821, Jul. 2021, doi: <a href="https://doi.org/10.48550/arXiv.2107.10821">10.48550/arXiv.2107.10821</a>.</li>
+<li class="ref"><span class="refn" id="r-19">[19]</span> R. Rei, C. A. Stewart, A. C. Farinha, and A. Lavie, “COMET: A Neural Framework for MT Evaluation,” <em>ArXiv</em>, vol. abs/2009.09025, Sep. 2020, doi: <a href="https://doi.org/10.48550/arXiv.2009.09025">10.48550/arXiv.2009.09025</a>.</li>
+<li class="ref"><span class="refn" id="r-20">[20]</span> M. Marmonier, B. Sagot, and R. Bawden, “The Lay of the Land in Idiom-Translation Quality Estimation,” Oct. 26, 2026.</li>
+<li class="ref"><span class="refn" id="r-21">[21]</span> N. M. Guerreiro <em>et al.</em>, “Hallucinations in Large Multilingual Translation Models,” <em>Transactions of the Association for Computational Linguistics</em>, vol. 11, pp. 1500–1517, Mar. 2023, doi: <a href="https://doi.org/10.1162/tacl_a_00615">10.1162/tacl_a_00615</a>.</li>
+<li class="ref"><span class="refn" id="r-22">[22]</span> S. Läubli, R. Sennrich, and M. Volk, “Has Machine Translation Achieved Human Parity? A Case for Document-level Evaluation,” <em>ArXiv</em>, vol. abs/1808.07048, Aug. 2018, doi: <a href="https://doi.org/10.18653/v1/D18-1512">10.18653/v1/D18-1512</a>.</li>
+<li class="ref"><span class="refn" id="r-23">[23]</span> L. N. Vieira, M. O’Hagan, and C. O’Sullivan, “Understanding the societal impacts of machine translation: a critical review of the literature on medical and legal use cases,” <em>Information, Communication &amp; Society</em>, vol. 24, pp. 1515–1532, Jun. 2020, doi: <a href="https://doi.org/10.1080/1369118X.2020.1776370">10.1080/1369118X.2020.1776370</a>.</li>
+</ol>
+</div>
+<script>
+var KEY = "ttq-read-theme";
+function preferred() {
+  try {
+    var saved = localStorage.getItem(KEY);
+    if (saved === "dark" || saved === "light") return saved;
+    if (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+  } catch (e) {}
+  return "light";
+}
+function apply(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  document.getElementById("theme").textContent = theme === "dark" ? "Light" : "Dark";
+}
+var theme = preferred();
+apply(theme);
+document.getElementById("theme").addEventListener("click", function () {
+  theme = theme === "dark" ? "light" : "dark";
+  try { localStorage.setItem(KEY, theme); } catch (e) {}
+  apply(theme);
+});
+</script>
+</body>
+</html>
