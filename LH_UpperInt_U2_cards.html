@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Language Hub U2 — слова</title>
+<style>
+  :root {
+    --ink: #172033;
+    --muted: #5c6778;
+    --line: #d5dbe3;
+    --paper: #f4f6f8;
+    --card: #ffffff;
+    --accent: #1d4e89;
+    --bad: #8a3b2c;
+    --good: #1f6b45;
+    --chip: #e7edf4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f8;
+    background: var(--paper);
+    color: #172033;
+    color: var(--ink);
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .app {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    padding: 12px 16px;
+    padding:
+      calc(12px + env(safe-area-inset-top, 0px))
+      16px
+      calc(12px + env(safe-area-inset-bottom, 0px));
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  h1 { margin: 0; font-size: 18px; font-weight: 700; }
+  .meta { color: #5c6778; color: var(--muted); font-size: 14px; }
+  .bar { height: 6px; background: #d5dbe3; background: var(--line); margin: 12px 0 10px; }
+  .bar > span { display: block; height: 100%; background: #1d4e89; background: var(--accent); width: 0; }
+  .chips { display: -webkit-flex; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+  .chips button { margin-right: 8px; }
+  @supports (gap: 8px) {
+    .chips button { margin-right: 0; }
+  }
+  .chips button, .tools button, .nav button {
+    font: inherit; border: 0; cursor: pointer;
+    -webkit-appearance: none; appearance: none;
+    -webkit-tap-highlight-color: rgba(29,78,137,.18);
+  }
+  .chips button {
+    -webkit-flex: 0 0 auto; flex: 0 0 auto;
+    background: #e7edf4; background: var(--chip);
+    color: #172033; color: var(--ink);
+    padding: 8px 12px; font-size: 15px;
+  }
+  .chips button.on { background: #1d4e89; background: var(--accent); color: #fff; }
+  .stage { -webkit-flex: 1; flex: 1; display: -webkit-flex; display: flex; -webkit-align-items: stretch; align-items: stretch; min-height: 0; }
+  .card {
+    width: 100%;
+    min-height: 280px;
+    min-height: 46vh;
+    min-height: 46dvh;
+    background: #fff;
+    background: var(--card);
+    border: 1px solid #d5dbe3;
+    border: 1px solid var(--line);
+    padding: 22px 18px 18px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-justify-content: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+  }
+  .card:focus { outline: 2px solid #1d4e89; outline: 2px solid var(--accent); outline-offset: 2px; }
+  .kicker { color: #1d4e89; color: var(--accent); font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 10px; }
+  .word { margin: 0; font-size: 40px; font-size: clamp(36px, 11vw, 52px); line-height: 1.05; font-weight: 700; }
+  .word.long { font-size: 28px; font-size: clamp(22px, 6.2vw, 32px); line-height: 1.15; }
+  .word.longer { font-size: 22px; font-size: clamp(18px, 5vw, 26px); line-height: 1.25; }
+  .hint { margin: 18px 0 0; color: var(--muted); font-size: 16px; }
+  .say {
+    align-self: center;
+    margin-top: 16px;
+    min-height: 44px;
+    padding: 8px 18px;
+    font: inherit;
+    font-size: 16px;
+    border: 0;
+    cursor: pointer;
+    background: #e7edf4;
+    background: var(--chip);
+    color: #172033;
+    color: var(--ink);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .card.back .say { align-self: flex-start; margin: 4px 0 12px; }
+  .pos { margin: 0 0 8px; color: var(--muted); font-size: 16px; }
+  .ipa { margin: 0 0 16px; font-size: 20px; }
+  .ru { margin: 0 0 12px; font-size: 28px; line-height: 1.2; font-weight: 700; }
+  .en { margin: 0; font-size: 16px; line-height: 1.35; color: #5c6778; color: var(--muted); }
+  .card.back { -webkit-justify-content: flex-start; justify-content: flex-start; overflow: auto; -webkit-overflow-scrolling: touch; text-align: left; }
+  .picture { height: 210px; margin: 2px 0 4px; background: #eef2f6; }
+  .picture img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .credit { margin: 0 0 10px; font-size: 12px; line-height: 1.3; }
+  .credit a { color: var(--muted); }
+  .explain { margin: 0 0 12px; font-size: 17px; line-height: 1.45; }
+  .nav, .tools { display: -webkit-flex; display: flex; gap: 8px; margin-top: 12px; }
+  .nav button, .tools button {
+    -webkit-flex: 1; flex: 1; min-height: 52px; font-size: 16px;
+    background: #e7edf4; background: var(--chip);
+    color: #172033; color: var(--ink);
+  }
+  .nav .bad { background: #f6e8e4; color: var(--bad); }
+  .nav .good { background: #e5f2ea; color: var(--good); }
+  .note { margin: 10px 0 0; color: #5c6778; color: var(--muted); font-size: 13px; line-height: 1.35; }
+  .empty { margin: auto; text-align: center; color: var(--muted); font-size: 18px; }
+  .card.intro {
+    -webkit-justify-content: flex-start; justify-content: flex-start;
+    overflow: auto; -webkit-overflow-scrolling: touch; text-align: left;
+    cursor: pointer;
+  }
+  .card.intro .word {
+    font-size: 28px; font-size: clamp(24px, 7vw, 34px);
+    margin: 0 0 16px;
+  }
+  .intro-label {
+    margin: 0 0 4px; color: #1d4e89; color: var(--accent);
+    font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700;
+  }
+  .intro-text { margin: 0 0 14px; font-size: 17px; line-height: 1.45; }
+  .intro-text.last { margin-bottom: 8px; }
+  body.intro-on #prev,
+  body.intro-on #again,
+  body.intro-on #known { display: none; }
+  #nojs { margin: 12px 0 0; padding: 10px 12px; background: #f6e8e4; color: #8a3b2c; font-size: 14px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Unit 2 · слова</h1>
+    <div class="meta" id="count"></div>
+  </header>
+  <div class="bar" aria-hidden="true"><span id="fill"></span></div>
+  <div class="chips" id="chips"></div>
+  <div class="stage" id="stage"></div>
+  <div class="nav">
+    <button type="button" id="prev">Назад</button>
+    <button type="button" class="bad" id="again">Ещё раз</button>
+    <button type="button" class="good" id="known">Помню</button>
+    <button type="button" id="next">Дальше</button>
+  </div>
+  <div class="tools">
+    <button type="button" id="shuffle">Перемешать</button>
+    <button type="button" id="unknown">Только новые</button>
+    <button type="button" id="reset">Сбросить</button>
+  </div>
+  <p class="note">Нажмите карточку, чтобы перевернуть. «Слушать» произносит английское. Свайп влево — дальше, вправо — назад.</p>
+  <p id="nojs">Карточки не запустились. На iPhone файл из «Файлы», Telegram или почты открывается как просмотр, без JavaScript. Нужна ссылка в Safari (не сам файл) либо компьютер: Chrome / Edge.</p>
+</div>
+<noscript>
+  <p class="note">Включите JavaScript или откройте файл в браузере, не в программе просмотра.</p>
+</noscript>
+<script>
+var CARDS = [
+  {
+    "id": "anxiety",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "æŋˈzaɪəti",
+    "ru": "тревога",
+    "en": "A lasting worry that something bad is about to happen.",
+    "word": "anxiety"
+  },
+  {
+    "id": "calorie",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "ˈkæləri",
+    "ru": "калория",
+    "en": "A unit of the energy you get from food.",
+    "word": "calorie"
+  },
+  {
+    "id": "cholesterol",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "UK kəˈlestərɒl · US kəˈlestərɑl",
+    "ru": "холестерин",
+    "en": "A fatty substance in the blood.",
+    "word": "cholesterol"
+  },
+  {
+    "id": "depression",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "dɪˈpreʃ(ə)n",
+    "ru": "депрессия",
+    "en": "An illness in which unhappiness stops a person living a normal life.",
+    "word": "depression"
+  },
+  {
+    "id": "level-of-fitness",
+    "section": "Здоровье",
+    "pos": "оборот",
+    "ipa": "ˈlev(ə)l əv ˈfɪtnəs",
+    "ru": "уровень физической формы",
+    "en": "How fit and strong someone is.",
+    "word": "level of fitness"
+  },
+  {
+    "id": "life-expectancy",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "laɪf ɪkˈspektənsi",
+    "ru": "ожидаемая продолжительность жизни",
+    "en": "How long someone is likely to live.",
+    "word": "life expectancy"
+  },
+  {
+    "id": "mental-health",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "ˈment(ə)l helθ",
+    "ru": "психическое здоровье",
+    "en": "The condition of your mind.",
+    "word": "mental health"
+  },
+  {
+    "id": "obesity",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "UK əʊˈbiːsəti · US oʊˈbisəti",
+    "ru": "ожирение",
+    "en": "A level of body fat that is dangerous to health.",
+    "word": "obesity"
+  },
+  {
+    "id": "physical",
+    "section": "Здоровье",
+    "pos": "прилагательное",
+    "ipa": "ˈfɪzɪk(ə)l",
+    "ru": "телесный, физический",
+    "en": "Relating to the body rather than the mind.",
+    "word": "physical"
+  },
+  {
+    "id": "processed-foods",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "UK ˈprəʊsest fuːdz · US prəˈsest fudz",
+    "ru": "обработанные продукты",
+    "en": "Food that has been changed by industrial processing.",
+    "word": "processed foods"
+  },
+  {
+    "id": "reduce-the-risk",
+    "section": "Здоровье",
+    "pos": "оборот",
+    "ipa": "UK rɪˈdjuːs ðə rɪsk · US rɪˈdus ðə rɪsk",
+    "ru": "снизить риск",
+    "en": "To make a bad outcome less likely.",
+    "word": "reduce the risk"
+  },
+  {
+    "id": "slow-the-ageing-process",
+    "section": "Здоровье",
+    "pos": "оборот",
+    "ipa": "UK sləʊ ðə ˈeɪdʒɪŋ ˈprəʊses · US sloʊ ðə ˈeɪdʒɪŋ ˈprɑses",
+    "ru": "замедлить старение",
+    "en": "To make the body age more slowly.",
+    "word": "slow the ageing process"
+  },
+  {
+    "id": "stress",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "stres",
+    "ru": "стресс",
+    "en": "Pressure and worry caused by everyday problems.",
+    "word": "stress"
+  },
+  {
+    "id": "admittedly",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "UK ədˈmɪtɪdli · US ədˈmɪtədli",
+    "ru": "надо признать",
+    "en": "Used to grant a point that weakens your own argument.",
+    "word": "admittedly"
+  },
+  {
+    "id": "apparently",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "əˈpærəntli",
+    "ru": "по-видимому, как говорят",
+    "en": "Based on what you have heard, not on what you know.",
+    "word": "apparently"
+  },
+  {
+    "id": "frankly",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "ˈfræŋkli",
+    "ru": "откровенно говоря",
+    "en": "Used before an honest opinion that may be unwelcome.",
+    "word": "frankly"
+  },
+  {
+    "id": "merely",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "UK ˈmɪə(r)li · US ˈmɪrli",
+    "ru": "всего лишь",
+    "en": "Used to say that something is only this, and nothing more.",
+    "word": "merely"
+  },
+  {
+    "id": "naturally",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "ˈnætʃ(ə)rəli",
+    "ru": "разумеется, как и ожидалось",
+    "en": "Used to say that something happened as you would expect.",
+    "word": "naturally"
+  },
+  {
+    "id": "sadly",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "ˈsædli",
+    "ru": "к сожалению",
+    "en": "Used to say that you find something unfortunate.",
+    "word": "sadly"
+  },
+  {
+    "id": "simply",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "ˈsɪmpli",
+    "ru": "просто, всего-навсего",
+    "en": "Used to stress that a statement is nothing more than it says.",
+    "word": "simply"
+  },
+  {
+    "id": "undoubtedly",
+    "section": "Позиция",
+    "pos": "наречие",
+    "ipa": "ʌnˈdaʊtɪdli",
+    "ru": "несомненно",
+    "en": "Used to say that something is certainly true.",
+    "word": "undoubtedly"
+  },
+  {
+    "id": "absolutely-ridiculous",
+    "section": "Усиление",
+    "pos": "сочетание",
+    "ipa": "UK ˈæbsəluːtli rɪˈdɪkjʊləs · US ˈæbsəluːtli rɪˈdɪkjələs",
+    "ru": "совершенно нелепый",
+    "en": "So unreasonable that it deserves to be laughed at.",
+    "word": "absolutely ridiculous"
+  },
+  {
+    "id": "bitterly-disappointed",
+    "section": "Усиление",
+    "pos": "сочетание",
+    "ipa": "UK ˈbɪtə(r)li ˌdɪsəˈpɔɪntɪd · US ˈbɪtərli ˌdɪsəˈpɔɪntəd",
+    "ru": "горько разочарованный",
+    "en": "Deeply unhappy because a hope has failed.",
+    "word": "bitterly disappointed"
+  },
+  {
+    "id": "deeply-concerned",
+    "section": "Усиление",
+    "pos": "сочетание",
+    "ipa": "UK ˈdiːpli kənˈsɜːnd · US ˈdipli kənˈsɜrnd",
+    "ru": "глубоко обеспокоенный",
+    "en": "Very worried about something.",
+    "word": "deeply concerned"
+  },
+  {
+    "id": "highly-likely",
+    "section": "Усиление",
+    "pos": "сочетание",
+    "ipa": "ˈhaɪli ˈlaɪkli",
+    "ru": "весьма вероятно",
+    "en": "Very probable.",
+    "word": "highly likely"
+  },
+  {
+    "id": "ridiculously-easy",
+    "section": "Усиление",
+    "pos": "сочетание",
+    "ipa": "UK rɪˈdɪkjʊləsli ˈiːzi · US rɪˈdɪkjələsli ˈizi",
+    "ru": "до смешного простой",
+    "en": "So easy that the ease itself is surprising.",
+    "word": "ridiculously easy"
+  }
+];
+
+var PHOTO = {
+  "processed-foods": {
+    src: "LH_UpperInt_U2_photos/processed-foods.jpg",
+    href: "https://commons.wikimedia.org/wiki/File:Canned_and_packaged_tuna_on_supermarket_shelves.jpg",
+    credit: "Daniel Case, CC BY-SA 3.0, Wikimedia Commons",
+    thumb: "data:image/jpeg;base64," + [
+      "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"
+    ].join("")
+  }
+};
+if (!Element.prototype.closest) {
+  Element.prototype.closest = function (sel) {
+    var el = this;
+    while (el && el.nodeType === 1) {
+      if ((el.matches && el.matches(sel)) || (el.msMatchesSelector && el.msMatchesSelector(sel))) return el;
+      el = el.parentElement || el.parentNode;
+    }
+    return null;
+  };
+}
+function closestEl(node, sel) {
+  var el = node && node.nodeType === 1 ? node : (node && node.parentElement);
+  return el && el.closest ? el.closest(sel) : null;
+}
+
+var EXPLAIN = {
+  "anxiety": "Устойчивое беспокойство, что случится плохое. Это состояние, а не разовая неприятность и не давление обстоятельств (stress).",
+  "calorie": "Единица энергии, которую даёт еда.",
+  "cholesterol": "Жироподобное вещество в крови. Избыток связывают с болезнями сердца.",
+  "depression": "Медицинское состояние: человек настолько подавлен, что не может жить обычной жизнью. Это не бытовое «мне грустно».",
+  "level-of-fitness": "Насколько человек вынослив и силён.",
+  "life-expectancy": "Срок, который человек, по расчётам, проживёт.",
+  "mental-health": "Состояние психики, а не тела.",
+  "obesity": "Состояние, при котором избыток жира опасен для здоровья.",
+  "physical": "Относится к телу, а не к психике: physical health.",
+  "processed-foods": "Еда после промышленной обработки, а не сырые продукты.",
+  "reduce-the-risk": "Уменьшить вероятность плохого исхода.",
+  "slow-the-ageing-process": "Снизить скорость, с которой организм стареет.",
+  "stress": "Давление и беспокойство из-за повседневных проблем. Это не диагноз depression и не само чувство тревоги.",
+  "admittedly": "Вводное: говорящий признаёт факт, даже если тот ослабляет его довод.",
+  "apparently": "Со слов других, без собственной уверенности.",
+  "frankly": "Вводное перед прямым мнением, которое собеседнику может не понравиться.",
+  "merely": "Подчёркивает малость: речь не о большем, чем сказано.",
+  "naturally": "Вводное: исход ожидаемый. Здесь это не «природным образом».",
+  "sadly": "Вводное сожаление. Здесь это не наречие «печально» о манере действия.",
+  "simply": "Усиливает: сказано ровно то, что имеется в виду, без добавок.",
+  "undoubtedly": "Говорящий считает факт бесспорным.",
+  "absolutely-ridiculous": "Крайняя степень нелепости. Absolutely здесь усилитель, а не «абсолютно» в буквальном смысле.",
+  "bitterly-disappointed": "Сильное разочарование: то, на что рассчитывали, не случилось.",
+  "deeply-concerned": "Сильная озабоченность, не лёгкое беспокойство.",
+  "highly-likely": "Высокая вероятность. Highly усиливает likely.",
+  "ridiculously-easy": "Настолько просто, что сама простота выглядит нелепой."
+};
+var KEY = "lh-u2-known";
+var CHIP_NAMES = ["Все", "Здоровье", "Позиция", "Усиление"];
+var INTRO = {
+  "title": "Unit 2 · слова",
+  "topic": "Здоровье и физическая форма, наречия позиции говорящего и сочетания «наречие + прилагательное».",
+  "source": "Официальный wordlist Language Hub Upper Intermediate, Unit 2. На обороте — краткий пересказ значения, не формулировка учебника.",
+  "notes": [
+    "Кнопка «Слушать» читает английское слово. На обороте она читает слово и короткую английскую формулировку."
+  ]
+};
+var INTRO_KEY = KEY + "-intro-seen";
+var known = {};
+try { JSON.parse(localStorage.getItem(KEY) || "[]").forEach(function (id) { known[id] = true; }); } catch (e) {}
+var section = "Все";
+var onlyNew = false;
+var shuffled = false;
+var order = CARDS.map(function (_, i) { return i; });
+var cursor = 0;
+var face = "front";
+var startX = 0;
+var swiped = false;
+var showIntro = introHasContent();
+try {
+  if (localStorage.getItem(INTRO_KEY) === "1") showIntro = false;
+} catch (e) {}
+
+function introHasContent() {
+  if (!INTRO) return false;
+  return !!(INTRO.topic || INTRO.title);
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(Object.keys(known))); } catch (e) {}
+}
+function dismissIntro() {
+  if (!showIntro) return;
+  showIntro = false;
+  try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  cursor = 0;
+  face = "front";
+  render();
+}
+function photoHtml(card) {
+  var p = PHOTO[card.id];
+  if (!p) return "";
+  var start = p.thumb || p.src;
+  var large = (p.src && p.thumb) ? p.src : "";
+  var html = '<div class="picture"><img alt="" src="' + start + '" data-large="' + large + '"></div>';
+  if (p.credit && p.href && p.href !== "#") {
+    html += '<p class="credit"><a href="' + p.href + '" target="_blank" rel="noopener">' + escapeHtml(p.credit) + "</a></p>";
+  }
+  return html;
+}
+function upgradePhoto() {
+  var img = document.querySelector(".picture img");
+  if (!img) return;
+  var large = img.getAttribute("data-large");
+  if (!large) return;
+  var probe = new Image();
+  probe.onload = function () { img.src = large; };
+  probe.src = large;
+}
+function isActivateKey(event) {
+  var k = event.key;
+  if (k === "Enter" || k === " " || k === "Spacebar") return true;
+  return event.keyCode === 13 || event.keyCode === 32;
+}
+function pool() {
+  return order.filter(function (i) {
+    var card = CARDS[i];
+    if (section !== "Все" && card.section !== section) return false;
+    if (onlyNew && known[card.id]) return false;
+    return true;
+  });
+}
+function escapeHtml(text) {
+  return String(text == null ? "" : text).replace(/[&<>"]/g, function (ch) {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch];
+  });
+}
+function wordClass(word) {
+  var n = String(word || "").length;
+  if (n > 42) return "word longer";
+  if (n > 18) return "word long";
+  return "word";
+}
+function posLine(card) {
+  var pos = card.pos || "";
+  var ipa = card.ipa || "";
+  if (pos && ipa) return pos + " · " + ipa;
+  return pos || ipa;
+}
+function sayButton(text) {
+  if (!text) return "";
+  return '<button type="button" class="say" data-say="' + escapeHtml(text) + '">Слушать</button>';
+}
+function englishVoice() {
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() || [] : [];
+  var i, v, gb, any;
+  for (i = 0; i < voices.length; i++) {
+    v = voices[i];
+    if (!v.lang || v.lang.indexOf("en") !== 0) continue;
+    if (!any) any = v;
+    if (!gb && v.lang.indexOf("en-GB") === 0) gb = v;
+  }
+  return gb || any || null;
+}
+function speakEnglish(text) {
+  if (!text) return;
+  if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+  var synth = window.speechSynthesis;
+  synth.cancel();
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "en-GB";
+  utter.rate = 0.92;
+  var voice = englishVoice();
+  if (voice) utter.voice = voice;
+  synth.speak(utter);
+}
+function stopSpeech() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+}
+function renderChips() {
+  var names = CHIP_NAMES;
+  document.getElementById("chips").innerHTML = names.map(function (name) {
+    return '<button type="button" data-section="' + name + '"' + (name === section ? ' class="on"' : "") + ">" + name + "</button>";
+  }).join("");
+}
+function introBlock(label, text) {
+  if (!text) return "";
+  var html = "";
+  if (label) html += '<p class="intro-label">' + escapeHtml(label) + "</p>";
+  return html + '<p class="intro-text">' + escapeHtml(text) + "</p>";
+}
+function renderIntro() {
+  var knownCount = CARDS.filter(function (card) { return known[card.id]; }).length;
+  document.getElementById("count").textContent = knownCount + " из " + CARDS.length + " помню";
+  document.getElementById("fill").style.width = CARDS.length ? Math.round(knownCount / CARDS.length * 100) + "%" : "0%";
+  document.getElementById("unknown").textContent = onlyNew ? "Все карточки" : "Только новые";
+  document.body.className = (document.body.className || "").replace(/\bintro-on\b/g, "") + " intro-on";
+  var inner = '<p class="kicker">О колоде</p>'
+    + '<h2 class="word">' + escapeHtml(INTRO.title || "Колода") + "</h2>"
+    + introBlock("", INTRO.topic)
+    + introBlock(INTRO.source ? "Источник" : "", INTRO.source)
+    + (INTRO.notes || []).map(function (note) { return introBlock("", note); }).join("")
+    + '<p class="hint">Нажмите «Дальше», чтобы начать. Эта карточка больше не появится.</p>';
+  document.getElementById("stage").innerHTML =
+    '<div class="card intro" id="card" role="button" tabindex="0">' + inner + "</div>";
+  var cardEl = document.getElementById("card");
+  cardEl.addEventListener("click", function (event) {
+    if (closestEl(event.target, "a")) return;
+    if (swiped) { swiped = false; return; }
+    dismissIntro();
+  });
+  cardEl.addEventListener("keydown", function (event) {
+    if (!isActivateKey(event)) return;
+    event.preventDefault();
+    dismissIntro();
+  });
+}
+function render() {
+  var items = pool();
+  var knownCount = CARDS.filter(function (card) { return known[card.id]; }).length;
+  document.getElementById("count").textContent = knownCount + " из " + CARDS.length + " помню";
+  document.getElementById("fill").style.width = CARDS.length ? Math.round(knownCount / CARDS.length * 100) + "%" : "0%";
+  document.getElementById("unknown").textContent = onlyNew ? "Все карточки" : "Только новые";
+  if (showIntro) {
+    renderIntro();
+    return;
+  }
+  document.body.className = (document.body.className || "").replace(/\bintro-on\b/g, "").replace(/^\s+|\s+$/g, "");
+  var stage = document.getElementById("stage");
+  if (!items.length) {
+    stage.innerHTML = '<p class="empty">В этом наборе карточек не осталось. Смените тему или нажмите «Все карточки».</p>';
+    return;
+  }
+  if (cursor >= items.length) cursor = 0;
+  var card = CARDS[items[cursor]];
+  var word = card.word || card.id;
+  var mark = known[card.id] ? " · помню" : "";
+  var sayFront = word;
+  var sayBack = card.en ? (word + ". " + card.en) : word;
+  var meta = posLine(card);
+  var inner = face === "front"
+    ? '<p class="kicker">' + escapeHtml(card.section) + " · " + (cursor + 1) + " / " + items.length + mark + '</p>'
+      + '<h2 class="' + wordClass(word) + '">' + escapeHtml(word) + '</h2>'
+      + sayButton(sayFront)
+      + '<p class="hint">Нажмите, чтобы увидеть объяснение</p>'
+    : '<p class="kicker">' + escapeHtml(word) + "</p>"
+      + sayButton(sayBack)
+      + photoHtml(card)
+      + '<p class="ru">' + escapeHtml(card.ru) + "</p>"
+      + (EXPLAIN[card.id] ? '<p class="explain">' + escapeHtml(EXPLAIN[card.id]) + "</p>" : "")
+      + (meta ? '<p class="pos">' + escapeHtml(meta) + "</p>" : "")
+      + (card.en ? '<p class="en">' + escapeHtml(card.en) + "</p>" : "");
+  stage.innerHTML = '<div class="card ' + face + '" id="card" role="button" tabindex="0">' + inner + "</div>";
+  var cardEl = document.getElementById("card");
+  function flipCard(event) {
+    if (closestEl(event.target, "a")) return;
+    var say = closestEl(event.target, ".say");
+    if (say) {
+      speakEnglish(say.getAttribute("data-say"));
+      return;
+    }
+    if (swiped) { swiped = false; return; }
+    stopSpeech();
+    face = face === "front" ? "back" : "front";
+    render();
+  }
+  cardEl.addEventListener("click", flipCard);
+  cardEl.addEventListener("keydown", function (event) {
+    if (!isActivateKey(event)) return;
+    event.preventDefault();
+    flipCard(event);
+  });
+  upgradePhoto();
+}
+function step(delta) {
+  if (showIntro) {
+    if (delta > 0) dismissIntro();
+    return;
+  }
+  var items = pool();
+  if (!items.length) return;
+  stopSpeech();
+  cursor = (cursor + delta + items.length) % items.length;
+  face = "front";
+  render();
+}
+document.getElementById("chips").addEventListener("click", function (event) {
+  var button = closestEl(event.target, "button");
+  if (!button) return;
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  section = button.getAttribute("data-section");
+  cursor = 0;
+  face = "front";
+  renderChips();
+  render();
+});
+document.getElementById("prev").addEventListener("click", function () { step(-1); });
+document.getElementById("next").addEventListener("click", function () { step(1); });
+document.getElementById("again").addEventListener("click", function () {
+  if (showIntro) { dismissIntro(); return; }
+  var items = pool();
+  if (!items.length) return;
+  delete known[CARDS[items[cursor]].id];
+  save();
+  face = "front";
+  step(1);
+});
+document.getElementById("known").addEventListener("click", function () {
+  if (showIntro) { dismissIntro(); return; }
+  var items = pool();
+  if (!items.length) return;
+  known[CARDS[items[cursor]].id] = true;
+  save();
+  face = "front";
+  if (onlyNew) render();
+  else step(1);
+});
+document.getElementById("shuffle").addEventListener("click", function () {
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  shuffled = !shuffled;
+  order = CARDS.map(function (_, i) { return i; });
+  if (shuffled) {
+    for (var i = order.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+    }
+  }
+  document.getElementById("shuffle").textContent = shuffled ? "По порядку" : "Перемешать";
+  cursor = 0;
+  face = "front";
+  render();
+});
+document.getElementById("unknown").addEventListener("click", function () {
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  onlyNew = !onlyNew;
+  cursor = 0;
+  face = "front";
+  render();
+});
+document.getElementById("reset").addEventListener("click", function () {
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  known = {};
+  save();
+  onlyNew = false;
+  cursor = 0;
+  face = "front";
+  render();
+});
+document.addEventListener("touchstart", function (event) {
+  if (!closestEl(event.target, ".card")) return;
+  startX = event.changedTouches[0].clientX;
+});
+document.addEventListener("touchend", function (event) {
+  if (!closestEl(event.target, ".card")) return;
+  var dx = event.changedTouches[0].clientX - startX;
+  if (Math.abs(dx) < 48) return;
+  swiped = true;
+  step(dx < 0 ? 1 : -1);
+});
+try {
+  renderChips();
+  render();
+  var nojs = document.getElementById("nojs");
+  if (nojs) nojs.style.display = "none";
+} catch (err) {
+  var box = document.getElementById("nojs");
+  if (box) box.textContent = "Ошибка запуска: " + (err && err.message ? err.message : err);
+}
+</script>
+</body>
+</html>

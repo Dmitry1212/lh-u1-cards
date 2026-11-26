@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Language Hub U2 — сверх словаря</title>
+<style>
+  :root {
+    --ink: #172033;
+    --muted: #5c6778;
+    --line: #d5dbe3;
+    --paper: #f4f6f8;
+    --card: #ffffff;
+    --accent: #1d4e89;
+    --bad: #8a3b2c;
+    --good: #1f6b45;
+    --chip: #e7edf4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f8;
+    background: var(--paper);
+    color: #172033;
+    color: var(--ink);
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .app {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    padding: 12px 16px;
+    padding:
+      calc(12px + env(safe-area-inset-top, 0px))
+      16px
+      calc(12px + env(safe-area-inset-bottom, 0px));
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  h1 { margin: 0; font-size: 18px; font-weight: 700; }
+  .meta { color: #5c6778; color: var(--muted); font-size: 14px; }
+  .bar { height: 6px; background: #d5dbe3; background: var(--line); margin: 12px 0 10px; }
+  .bar > span { display: block; height: 100%; background: #1d4e89; background: var(--accent); width: 0; }
+  .chips { display: -webkit-flex; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+  .chips button { margin-right: 8px; }
+  @supports (gap: 8px) {
+    .chips button { margin-right: 0; }
+  }
+  .chips button, .tools button, .nav button {
+    font: inherit; border: 0; cursor: pointer;
+    -webkit-appearance: none; appearance: none;
+    -webkit-tap-highlight-color: rgba(29,78,137,.18);
+  }
+  .chips button {
+    -webkit-flex: 0 0 auto; flex: 0 0 auto;
+    background: #e7edf4; background: var(--chip);
+    color: #172033; color: var(--ink);
+    padding: 8px 12px; font-size: 15px;
+  }
+  .chips button.on { background: #1d4e89; background: var(--accent); color: #fff; }
+  .stage { -webkit-flex: 1; flex: 1; display: -webkit-flex; display: flex; -webkit-align-items: stretch; align-items: stretch; min-height: 0; }
+  .card {
+    width: 100%;
+    min-height: 280px;
+    min-height: 46vh;
+    min-height: 46dvh;
+    background: #fff;
+    background: var(--card);
+    border: 1px solid #d5dbe3;
+    border: 1px solid var(--line);
+    padding: 22px 18px 18px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-justify-content: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+  }
+  .card:focus { outline: 2px solid #1d4e89; outline: 2px solid var(--accent); outline-offset: 2px; }
+  .kicker { color: #1d4e89; color: var(--accent); font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 10px; }
+  .word { margin: 0; font-size: 40px; font-size: clamp(36px, 11vw, 52px); line-height: 1.05; font-weight: 700; }
+  .word.long { font-size: 28px; font-size: clamp(22px, 6.2vw, 32px); line-height: 1.15; }
+  .word.longer { font-size: 22px; font-size: clamp(18px, 5vw, 26px); line-height: 1.25; }
+  .hint { margin: 18px 0 0; color: var(--muted); font-size: 16px; }
+  .say {
+    align-self: center;
+    margin-top: 16px;
+    min-height: 44px;
+    padding: 8px 18px;
+    font: inherit;
+    font-size: 16px;
+    border: 0;
+    cursor: pointer;
+    background: #e7edf4;
+    background: var(--chip);
+    color: #172033;
+    color: var(--ink);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .card.back .say { align-self: flex-start; margin: 4px 0 12px; }
+  .pos { margin: 0 0 8px; color: var(--muted); font-size: 16px; }
+  .ipa { margin: 0 0 16px; font-size: 20px; }
+  .ru { margin: 0 0 12px; font-size: 28px; line-height: 1.2; font-weight: 700; }
+  .en { margin: 0; font-size: 16px; line-height: 1.35; color: #5c6778; color: var(--muted); }
+  .card.back { -webkit-justify-content: flex-start; justify-content: flex-start; overflow: auto; -webkit-overflow-scrolling: touch; text-align: left; }
+  .picture { height: 210px; margin: 2px 0 4px; background: #eef2f6; }
+  .picture img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .credit { margin: 0 0 10px; font-size: 12px; line-height: 1.3; }
+  .credit a { color: var(--muted); }
+  .explain { margin: 0 0 12px; font-size: 17px; line-height: 1.45; }
+  .nav, .tools { display: -webkit-flex; display: flex; gap: 8px; margin-top: 12px; }
+  .nav button, .tools button {
+    -webkit-flex: 1; flex: 1; min-height: 52px; font-size: 16px;
+    background: #e7edf4; background: var(--chip);
+    color: #172033; color: var(--ink);
+  }
+  .nav .bad { background: #f6e8e4; color: var(--bad); }
+  .nav .good { background: #e5f2ea; color: var(--good); }
+  .note { margin: 10px 0 0; color: #5c6778; color: var(--muted); font-size: 13px; line-height: 1.35; }
+  .empty { margin: auto; text-align: center; color: var(--muted); font-size: 18px; }
+  .card.intro {
+    -webkit-justify-content: flex-start; justify-content: flex-start;
+    overflow: auto; -webkit-overflow-scrolling: touch; text-align: left;
+    cursor: pointer;
+  }
+  .card.intro .word {
+    font-size: 28px; font-size: clamp(24px, 7vw, 34px);
+    margin: 0 0 16px;
+  }
+  .intro-label {
+    margin: 0 0 4px; color: #1d4e89; color: var(--accent);
+    font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700;
+  }
+  .intro-text { margin: 0 0 14px; font-size: 17px; line-height: 1.45; }
+  .intro-text.last { margin-bottom: 8px; }
+  body.intro-on #prev,
+  body.intro-on #again,
+  body.intro-on #known { display: none; }
+  #nojs { margin: 12px 0 0; padding: 10px 12px; background: #f6e8e4; color: #8a3b2c; font-size: 14px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Unit 2 · сверх словаря</h1>
+    <div class="meta" id="count"></div>
+  </header>
+  <div class="bar" aria-hidden="true"><span id="fill"></span></div>
+  <div class="chips" id="chips"></div>
+  <div class="stage" id="stage"></div>
+  <div class="nav">
+    <button type="button" id="prev">Назад</button>
+    <button type="button" class="bad" id="again">Ещё раз</button>
+    <button type="button" class="good" id="known">Помню</button>
+    <button type="button" id="next">Дальше</button>
+  </div>
+  <div class="tools">
+    <button type="button" id="shuffle">Перемешать</button>
+    <button type="button" id="unknown">Только новые</button>
+    <button type="button" id="reset">Сбросить</button>
+  </div>
+  <p class="note">Нажмите карточку, чтобы перевернуть. «Слушать» произносит английское. Свайп влево — дальше, вправо — назад.</p>
+  <p id="nojs">Карточки не запустились. На iPhone файл из «Файлы», Telegram или почты открывается как просмотр, без JavaScript. Нужна ссылка в Safari (не сам файл) либо компьютер: Chrome / Edge.</p>
+</div>
+<noscript>
+  <p class="note">Включите JavaScript или откройте файл в браузере, не в программе просмотра.</p>
+</noscript>
+<script>
+var CARDS = [
+  {
+    "id": "junk-food",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "ˈdʒʌŋk fuːd",
+    "ru": "вредная еда",
+    "en": "food with little nutrition, usually ready-made and salty or sweet",
+    "word": "junk food"
+  },
+  {
+    "id": "lack-of-exercise",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "læk əv ˈeksəsaɪz",
+    "ru": "недостаток движения",
+    "en": "not getting enough physical activity",
+    "word": "lack of exercise"
+  },
+  {
+    "id": "work-life-balance",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "UK ˌwɜːk laɪf ˈbæləns · US ˌwɜrk laɪf ˈbæləns",
+    "ru": "баланс работы и личной жизни",
+    "en": "a workable split between your job and the rest of your life",
+    "word": "work-life balance"
+  },
+  {
+    "id": "overweight",
+    "section": "Здоровье",
+    "pos": "прилагательное",
+    "ipa": "UK ˌəʊvəˈweɪt · US ˌoʊvərˈweɪt",
+    "ru": "с избыточным весом",
+    "en": "weighing more than is healthy",
+    "word": "overweight"
+  },
+  {
+    "id": "sedentary",
+    "section": "Здоровье",
+    "pos": "прилагательное",
+    "ipa": "UK ˈsedntri · US ˈsednteri",
+    "ru": "сидячий",
+    "en": "involving a lot of sitting and little movement",
+    "word": "sedentary"
+  },
+  {
+    "id": "immune-system",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "ɪˈmjuːn ˈsɪstəm",
+    "ru": "иммунная система",
+    "en": "the body's defence against illness",
+    "word": "immune system"
+  },
+  {
+    "id": "heart-disease",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "UK hɑːt dɪˈziːz · US hɑrt dɪˈziz",
+    "ru": "болезнь сердца",
+    "en": "illness of the heart",
+    "word": "heart disease"
+  },
+  {
+    "id": "high-blood-pressure",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "UK haɪ ˈblʌd ˌpreʃə · US haɪ ˈblʌd ˌpreʃər",
+    "ru": "высокое давление",
+    "en": "blood pushing too hard against the artery walls",
+    "word": "high blood pressure"
+  },
+  {
+    "id": "optimist",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "UK ˈɒptɪmɪst · US ˈɑptɪmɪst",
+    "ru": "оптимист",
+    "en": "a person who expects a good outcome",
+    "word": "optimist"
+  },
+  {
+    "id": "pessimist",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "ˈpesɪmɪst",
+    "ru": "пессимист",
+    "en": "a person who expects a bad outcome",
+    "word": "pessimist"
+  },
+  {
+    "id": "cope-with",
+    "section": "Здоровье",
+    "pos": "глагол + предлог",
+    "ipa": "UK kəʊp wɪð · US koʊp wɪð",
+    "ru": "справляться с",
+    "en": "to manage a difficult situation",
+    "word": "cope with"
+  },
+  {
+    "id": "suffer-from",
+    "section": "Здоровье",
+    "pos": "глагол + предлог",
+    "ipa": "UK ˈsʌfə frəm · US ˈsʌfər frʌm",
+    "ru": "страдать от",
+    "en": "to have an illness or a lasting problem",
+    "word": "suffer from"
+  },
+  {
+    "id": "under-pressure",
+    "section": "Здоровье",
+    "pos": "оборот",
+    "ipa": "UK ˈʌndə ˈpreʃə · US ˈʌndər ˈpreʃər",
+    "ru": "под давлением",
+    "en": "being forced to deal with stress or a deadline",
+    "word": "under pressure"
+  },
+  {
+    "id": "give-up",
+    "section": "Здоровье",
+    "pos": "фразовый глагол",
+    "ipa": "gɪv ˈʌp",
+    "ru": "бросить",
+    "en": "to stop a habit completely",
+    "word": "give up"
+  },
+  {
+    "id": "cut-down-on",
+    "section": "Здоровье",
+    "pos": "фразовый глагол",
+    "ipa": "UK kʌt ˈdaʊn ɒn · US kʌt ˈdaʊn ɑn",
+    "ru": "сократить",
+    "en": "to start doing or consuming less of something",
+    "word": "cut down on"
+  },
+  {
+    "id": "put-on-weight",
+    "section": "Здоровье",
+    "pos": "оборот",
+    "ipa": "UK pʊt ɒn weɪt · US pʊt ɑn weɪt",
+    "ru": "набрать вес",
+    "en": "to become heavier",
+    "word": "put on weight"
+  },
+  {
+    "id": "new-years-resolution",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "UK ˌnjuː jɪəz ˌrezəˈluːʃn · US ˌnu jɪrz ˌrezəˈluʃn",
+    "ru": "новогоднее обещание",
+    "en": "a decision to change a habit at the start of the year",
+    "word": "New Year's resolution"
+  },
+  {
+    "id": "red-meat",
+    "section": "Здоровье",
+    "pos": "сочетание",
+    "ipa": "red miːt",
+    "ru": "красное мясо",
+    "en": "meat such as beef or lamb",
+    "word": "red meat"
+  },
+  {
+    "id": "dairy",
+    "section": "Здоровье",
+    "pos": "существительное",
+    "ipa": "UK ˈdeəri · US ˈderi",
+    "ru": "молочные продукты",
+    "en": "milk and foods made from milk",
+    "word": "dairy"
+  },
+  {
+    "id": "volunteer",
+    "section": "Здоровье",
+    "pos": "глагол",
+    "ipa": "UK ˌvɒlənˈtɪə · US ˌvɑlənˈtɪr",
+    "ru": "работать бесплатно, помогать",
+    "en": "to give time to help, without pay",
+    "word": "volunteer"
+  },
+  {
+    "id": "used-to",
+    "section": "Привычка",
+    "pos": "оборот",
+    "ipa": "UK ˈjuːst tu · US ˈjust tu",
+    "ru": "раньше обычно",
+    "en": "a past habit or state that is no longer true",
+    "word": "used to"
+  },
+  {
+    "id": "would-habit",
+    "section": "Привычка",
+    "pos": "оборот",
+    "ipa": "wʊd",
+    "ru": "бывало",
+    "en": "a repeated past action, not a past state",
+    "word": "would"
+  },
+  {
+    "id": "be-used-to",
+    "section": "Привычка",
+    "pos": "оборот",
+    "ipa": "UK bi ˈjuːst tu · US bi ˈjust tu",
+    "ru": "быть привыкшим",
+    "en": "to find something normal already",
+    "word": "be used to"
+  },
+  {
+    "id": "get-used-to",
+    "section": "Привычка",
+    "pos": "оборот",
+    "ipa": "UK ɡet ˈjuːst tu · US ɡet ˈjust tu",
+    "ru": "привыкнуть",
+    "en": "to become familiar with something new",
+    "word": "get used to"
+  },
+  {
+    "id": "rat-race",
+    "section": "Привычка",
+    "pos": "оборот",
+    "ipa": "ðə ræt reɪs",
+    "ru": "крысиные бега",
+    "en": "a tiring competition to work, earn and keep up",
+    "word": "the rat race"
+  },
+  {
+    "id": "as-we-all-know",
+    "section": "Допущения",
+    "pos": "оборот",
+    "ipa": "æz wi ɔːl nəʊ",
+    "ru": "как всем известно",
+    "en": "used to present a claim as shared knowledge",
+    "word": "as we all know"
+  },
+  {
+    "id": "without-doubt",
+    "section": "Допущения",
+    "pos": "оборот",
+    "ipa": "wɪˈðaʊt daʊt",
+    "ru": "без сомнения",
+    "en": "used to present something as certain",
+    "word": "without doubt"
+  },
+  {
+    "id": "beyond-question",
+    "section": "Допущения",
+    "pos": "оборот",
+    "ipa": "UK bɪˌjɒnd ˈkwestʃən · US bɪˌjɑnd ˈkwestʃən",
+    "ru": "вне сомнений",
+    "en": "so clear that it is not open to argument",
+    "word": "beyond question"
+  },
+  {
+    "id": "despite",
+    "section": "Допущения",
+    "pos": "предлог",
+    "ipa": "dɪˈspaɪt",
+    "ru": "несмотря на",
+    "en": "although something else is true",
+    "word": "despite"
+  },
+  {
+    "id": "fomo",
+    "section": "Сети",
+    "pos": "существительное",
+    "ipa": "UK ˈfəʊməʊ · US ˈfoʊmoʊ",
+    "ru": "страх что-то пропустить",
+    "en": "fear of missing out",
+    "word": "FOMO"
+  },
+  {
+    "id": "face-to-face",
+    "section": "Сети",
+    "pos": "прилагательное",
+    "ipa": "UK ˌfeɪs tə ˈfeɪs · US ˌfeɪs tə ˈfeɪs",
+    "ru": "лично, глаза в глаза",
+    "en": "meeting in person, not online",
+    "word": "face-to-face"
+  },
+  {
+    "id": "anti-social",
+    "section": "Сети",
+    "pos": "прилагательное",
+    "ipa": "UK ˌæntiˈsəʊʃl · US ˌæntaɪˈsoʊʃl",
+    "ru": "нелюдимый, разрушающий общение",
+    "en": "harming contact with other people",
+    "word": "anti-social"
+  },
+  {
+    "id": "isolated",
+    "section": "Сети",
+    "pos": "прилагательное",
+    "ipa": "ˈaɪsəleɪtɪd",
+    "ru": "изолированный",
+    "en": "cut off from other people",
+    "word": "isolated"
+  },
+  {
+    "id": "commute",
+    "section": "Сети",
+    "pos": "глагол",
+    "ipa": "kəˈmjuːt",
+    "ru": "ездить на работу",
+    "en": "to travel regularly between home and work",
+    "word": "commute"
+  },
+  {
+    "id": "socialise",
+    "section": "Сети",
+    "pos": "глагол",
+    "ipa": "UK ˈsəʊʃəlaɪz · US ˈsoʊʃəlaɪz",
+    "ru": "общаться",
+    "en": "to spend time with people for pleasure",
+    "word": "socialise"
+  },
+  {
+    "id": "lose-contact",
+    "section": "Сети",
+    "pos": "оборот",
+    "ipa": "UK luːz ˈkɒntækt · US luz ˈkɑntækt",
+    "ru": "потерять связь",
+    "en": "to stop being in touch with someone",
+    "word": "lose contact"
+  },
+  {
+    "id": "from-my-perspective",
+    "section": "Сети",
+    "pos": "оборот",
+    "ipa": "UK frəm maɪ pəˈspektɪv · US frəm maɪ pərˈspektɪv",
+    "ru": "с моей точки зрения",
+    "en": "in my view",
+    "word": "from my perspective"
+  },
+  {
+    "id": "skim",
+    "section": "Сети",
+    "pos": "глагол",
+    "ipa": "skɪm",
+    "ru": "просматривать по верхам",
+    "en": "to look through something quickly, without reading it properly",
+    "word": "skim"
+  },
+  {
+    "id": "gluten",
+    "section": "Еда",
+    "pos": "существительное",
+    "ipa": "ˈɡluːtn",
+    "ru": "глютен",
+    "en": "a protein in wheat and some other grains",
+    "word": "gluten"
+  },
+  {
+    "id": "vegan",
+    "section": "Еда",
+    "pos": "существительное",
+    "ipa": "ˈviːɡən",
+    "ru": "веган",
+    "en": "a person who eats nothing that comes from animals",
+    "word": "vegan"
+  },
+  {
+    "id": "clean-eating",
+    "section": "Еда",
+    "pos": "сочетание",
+    "ipa": "kliːn ˈiːtɪŋ",
+    "ru": "«чистое» питание",
+    "en": "a way of eating that avoids heavily processed food",
+    "word": "clean eating"
+  },
+  {
+    "id": "sceptical",
+    "section": "Еда",
+    "pos": "прилагательное",
+    "ipa": "ˈskeptɪkl",
+    "ru": "скептически настроенный",
+    "en": "not easily convinced",
+    "word": "sceptical"
+  },
+  {
+    "id": "mindfully",
+    "section": "Еда",
+    "pos": "наречие",
+    "ipa": "ˈmaɪndfəli",
+    "ru": "осознанно",
+    "en": "paying attention to what you are doing",
+    "word": "mindfully"
+  },
+  {
+    "id": "self-help",
+    "section": "Самопомощь",
+    "pos": "существительное",
+    "ipa": "ˌselfˈhelp",
+    "ru": "самопомощь",
+    "en": "advice and books about improving your own life",
+    "word": "self-help"
+  },
+  {
+    "id": "carry-on",
+    "section": "Самопомощь",
+    "pos": "фразовый глагол",
+    "ipa": "UK ˌkæri ˈɒn · US ˌkæri ˈɑn",
+    "ru": "продолжать",
+    "en": "to continue what you were doing",
+    "word": "carry on"
+  },
+  {
+    "id": "declutter",
+    "section": "Совет",
+    "pos": "глагол",
+    "ipa": "UK ˌdiːˈklʌtə · US ˌdiːˈklʌtər",
+    "ru": "разгрести завалы",
+    "en": "to remove things you do not need, so a place feels clearer",
+    "word": "declutter"
+  },
+  {
+    "id": "get-rid-of",
+    "section": "Совет",
+    "pos": "оборот",
+    "ipa": "ɡet ˈrɪd əv",
+    "ru": "избавиться от",
+    "en": "to remove something you no longer want",
+    "word": "get rid of"
+  },
+  {
+    "id": "on-impulse",
+    "section": "Совет",
+    "pos": "оборот",
+    "ipa": "UK ɒn ˈɪmpʌls · US ɑn ˈɪmpʌls",
+    "ru": "сгоряча, импульсивно",
+    "en": "without planning, because of a sudden wish",
+    "word": "on impulse"
+  },
+  {
+    "id": "good-idea",
+    "section": "Совет",
+    "pos": "оборот",
+    "ipa": "UK ɪts ə ˌɡʊd aɪˈdɪə tu · US ɪts ə ˌɡʊd aɪˈdiə tu",
+    "ru": "разумно",
+    "en": "a soft way to advise someone to do something",
+    "word": "it's a good idea to"
+  },
+  {
+    "id": "dont-forget",
+    "section": "Совет",
+    "pos": "оборот",
+    "ipa": "UK ˌdəʊnt fəˈɡet tu · US ˌdoʊnt fərˈɡet tu",
+    "ru": "не забудь",
+    "en": "a reminder to do something",
+    "word": "don't forget to"
+  },
+  {
+    "id": "remember-to",
+    "section": "Совет",
+    "pos": "оборот",
+    "ipa": "UK rɪˈmembə tu · US rɪˈmembər tu",
+    "ru": "не забудь сделать",
+    "en": "used to remind someone to do a future action",
+    "word": "remember to"
+  },
+  {
+    "id": "avoid-ing",
+    "section": "Совет",
+    "pos": "оборот",
+    "ipa": "əˈvɔɪd",
+    "ru": "избегать",
+    "en": "avoid plus the -ing form, when you advise someone not to do something",
+    "word": "avoid …-ing"
+  },
+  {
+    "id": "realistic-goal",
+    "section": "Цели",
+    "pos": "сочетание",
+    "ipa": "UK ə ˌrɪəˈlɪstɪk ɡəʊl · US ə ˌriːəˈlɪstɪk ɡoʊl",
+    "ru": "реалистичная цель",
+    "en": "a goal you can actually reach",
+    "word": "a realistic goal"
+  },
+  {
+    "id": "prioritise",
+    "section": "Цели",
+    "pos": "глагол",
+    "ipa": "UK praɪˈɒrətaɪz · US praɪˈɔrətaɪz",
+    "ru": "расставить по важности",
+    "en": "to decide what matters most and do that first",
+    "word": "prioritise"
+  },
+  {
+    "id": "track-progress",
+    "section": "Цели",
+    "pos": "оборот",
+    "ipa": "UK træk jɔː ˈprəʊɡres · US træk jʊr ˈprɑɡres",
+    "ru": "отслеживать прогресс",
+    "en": "to record how far you have come",
+    "word": "track your progress"
+  },
+  {
+    "id": "achievable",
+    "section": "Цели",
+    "pos": "прилагательное",
+    "ipa": "əˈtʃiːvəbl",
+    "ru": "достижимый",
+    "en": "possible to complete",
+    "word": "achievable"
+  },
+  {
+    "id": "stick-to",
+    "section": "Цели",
+    "pos": "фразовый глагол",
+    "ipa": "stɪk tu",
+    "ru": "придерживаться",
+    "en": "to continue with a plan and not leave it",
+    "word": "stick to"
+  },
+  {
+    "id": "reward-yourself",
+    "section": "Цели",
+    "pos": "оборот",
+    "ipa": "UK rɪˈwɔːd jɔːˈself · US rɪˈwɔrd jʊrˈself",
+    "ru": "поощрить себя",
+    "en": "to give yourself something pleasant when you reach a step",
+    "word": "reward yourself"
+  },
+  {
+    "id": "one-change",
+    "section": "Цели",
+    "pos": "оборот",
+    "ipa": "wʌn tʃeɪndʒ ət ə taɪm",
+    "ru": "по одному изменению",
+    "en": "changing only one habit before you start the next",
+    "word": "one change at a time"
+  },
+  {
+    "id": "deeply-opposed",
+    "section": "Усиление",
+    "pos": "сочетание",
+    "ipa": "UK ˈdiːpli əˈpəʊzd · US ˈdipli əˈpoʊzd",
+    "ru": "решительно против",
+    "en": "strongly against something",
+    "word": "deeply opposed"
+  },
+  {
+    "id": "the-worst-ever",
+    "section": "Усиление",
+    "pos": "оборот",
+    "ipa": "UK ðə wɜːst ˈevə · US ðə wɜrst ˈevər",
+    "ru": "худший в жизни",
+    "en": "a superlative plus ever, never or in your life, to make a claim stronger",
+    "word": "the worst … ever"
+  }
+];
+
+var PHOTO = {};
+if (!Element.prototype.closest) {
+  Element.prototype.closest = function (sel) {
+    var el = this;
+    while (el && el.nodeType === 1) {
+      if ((el.matches && el.matches(sel)) || (el.msMatchesSelector && el.msMatchesSelector(sel))) return el;
+      el = el.parentElement || el.parentNode;
+    }
+    return null;
+  };
+}
+function closestEl(node, sel) {
+  var el = node && node.nodeType === 1 ? node : (node && node.parentElement);
+  return el && el.closest ? el.closest(sel) : null;
+}
+
+var EXPLAIN = {
+  "junk-food": "В уроке это то, от чего отказываются или что сокращают. Не то же, что processed foods: junk food оценивает еду как вредную, processed foods описывает способ производства.",
+  "lack-of-exercise": "Lack of значит «нехватка». Рядом в уроке есть level of fitness: это измеренный уровень формы, а lack of exercise — причина, почему форма падает.",
+  "work-life-balance": "В уроке это один из факторов здоровья, наряду с едой, курением и движением.",
+  "overweight": "Мягче, чем obesity из официального списка. Obesity — опасное состояние, overweight — что вес выше нормы.",
+  "sedentary": "В статье урока sedentary lifestyle противопоставлен ходьбе, залу и любой нагрузке. Не «спокойный» и не «ленивый».",
+  "immune-system": "В статье пение и позитивный настрой связывают с тем, что организм лучше сопротивляется болезням.",
+  "heart-disease": "В тексте урока рядом стоят heart disease, cholesterol и red meat. Это диагноз или группа болезней, не само слово cholesterol.",
+  "high-blood-pressure": "В Vocabulary Hub это отдельный риск, который снижают еда и нагрузка. Не путать с under pressure — то про стресс, не про тонометр.",
+  "optimist": "В статье «Don't moan» оптимисты живут дольше пессимистов. Optimism в Unit 1 — само свойство, optimist — человек.",
+  "pessimist": "Пара к optimist в той же статье. Не наречие sadly из официального списка: sadly показывает позицию говорящего, pessimist описывает человека.",
+  "cope-with": "Предлог только with. В Unit 3 deal with ближе к тому, чтобы взять трудное состояние под контроль. Cope with — вытянуть, не сломаться.",
+  "suffer-from": "В упражнениях урока: suffer from anxiety. Это наличие проблемы, не «справляться». Cope with — про то, как её выдерживают.",
+  "under-pressure": "В тетради верный предлог under, не in. Это состояние нагрузки. Stress из списка — само давление, under pressure — человек в этом состоянии.",
+  "give-up": "В уроке give up coffee, sugar, smoking. Полный отказ. Cut down on — только уменьшить.",
+  "cut-down-on": "В уроке cut down on sugar. Не бросить совсем. Тот же оборот есть в Unit 7, здесь он про еду и привычки.",
+  "put-on-weight": "В грамматике урока рядом стоит lose a bit of weight. Put on — вес пришёл, lose — ушёл.",
+  "new-years-resolution": "Тема аудирования 2.1: люди загадывают отказ от кофе, мяса, сахара и часто не держатся.",
+  "red-meat": "В статье про Японию его заменяют рыбой, чтобы снизить холестерин. Не любая еда.",
+  "dairy": "В той же статье dairy сокращают вместе с red meat. Это группа продуктов, не один напиток.",
+  "volunteer": "В статье «Help others» долгая жизнь связана с тем, что человек регулярно volunteer. Существительное volunteer worker разобрано в Unit 7.",
+  "used-to": "Дальше инфинитив: used to work long hours. Годится и для действий, и для состояний. Would в этом значении — только для повторявшихся действий, не для состояний.",
+  "would-habit": "He would complain about his work. Нельзя сказать would have long hair про прошлое состояние. Для состояния нужен used to.",
+  "be-used-to": "Дальше существительное или -ing, не инфинитив: be used to getting up early. Used to без be — про прошлое, которого больше нет.",
+  "get-used-to": "Это процесс. Be used to — привычка уже есть. We're getting used to it значит «ещё не до конца привыкли».",
+  "rat-race": "Тема интервью 2.2: quitting the rat race — уйти из гонки за должностью и деньгами. Образ, не зоология.",
+  "as-we-all-know": "В уроке это сигнал допущения: автор делает вид, что читатель уже согласен. Не то же, что admittedly: admittedly признаёт слабое место своего довода.",
+  "without-doubt": "Рядом в статье есть undoubtedly из официального списка. Without doubt делает ту же работу фразой, не одним наречием.",
+  "beyond-question": "В тексте: Beyond question, we're less comfortable. Говорящий закрывает спор до аргумента.",
+  "despite": "Дальше существительное или -ing, не предложение: despite being in contact. В статье за ним прячется допуск: контакт есть, а близости нет.",
+  "fomo": "В статье это расшифровано как fear of missing out: тревога, что у других жизнь интереснее. Аббревиатура, не отдельное слово fear.",
+  "face-to-face": "В статье противопоставлено переписке и ленте. Можно наречием: talk face-to-face.",
+  "anti-social": "В статье соцсети предлагают переименовать в anti-social media. Здесь это про разобщение, не про нарушение закона.",
+  "isolated": "В тексте isolated individuals и an isolated world. Человек формально на связи, но отдельно от других.",
+  "commute": "В статье это часть давления современной жизни: We commute long distances. Существительное — the commute, сама дорога.",
+  "socialise": "В британском учебнике написание socialise. В американском — socialize. В тексте: socialising while looking at a phone.",
+  "lose-contact": "В статье: lose contact with people, хотя сообщений больше. In contact — связь ещё есть. Не то же, что isolated: lose contact про конкретных людей.",
+  "from-my-perspective": "В статье рядом from my point of view. Оба вводят личную позицию. Frankly из списка резче: говорящий предупреждает, что мнение может не понравиться.",
+  "skim": "В статье люди skim through their social media за ужином. Не «снять сливки» и не «скользить по воде».",
+  "gluten": "В глоссарии Café Hub: клейкое вещество в пшенице и части другой еды. Не название диеты.",
+  "vegan": "В глоссарии урока это шире отказа от мяса: ни яиц, ни молока, ни сыра. Vegetarian этого не покрывает.",
+  "clean-eating": "Тема видео 2.3. В уроке это выбор рациона, не медицинский термин. Рядом его перефразируют как eating mindfully.",
+  "sceptical": "Британское написание. В американском — skeptical. В видео героиня была sceptical, что смена еды что-то даст.",
+  "mindfully": "В диалоге clean eating перефразируют как eating mindfully: замечать, что кладёшь в тело. Не «вежливо» и не «осторожно».",
+  "self-help": "Тема текста рабочей тетради 2.3: к советам обращаются, когда трудно, и не всякий совет научен. Не психологическая помощь врача.",
+  "carry-on": "В тексте тетради это «не бросать», когда трудно. Give up — полный отказ. Carry on — то же дело идёт дальше.",
+  "declutter": "Тема образца статьи в разделе Writing: дом и голова. Не «убрать пыль». Рядом в том же тексте get rid of — избавиться от конкретной вещи.",
+  "get-rid-of": "В статье-образце это про вещи, которые копятся. Дальше существительное или -ing. Не то же, что give up: give up — бросить привычку, get rid of — убрать предмет.",
+  "on-impulse": "В правилах статьи: не покупать on impulse. Решение принято в момент желания, без паузы.",
+  "good-idea": "В таблице Writing это один из способов дать совет. Дальше инфинитив. Мягче, чем голый императив.",
+  "dont-forget": "В той же таблице. Дальше инфинитив. Совет звучит как напоминание, не как запрет.",
+  "remember-to": "В таблице Writing рядом с don't forget to. Remember to + инфинитив — про действие, которое ещё впереди. Remember + -ing в этом уроке не разбирают: то было бы про уже сделанное.",
+  "avoid-ing": "В упражнении Writing совет переписывают через Avoid. Дальше герундий, не инфинитив: avoid putting things in a pile.",
+  "realistic-goal": "В аудировании 2.4 это первый приём: set realistic goals. Не «любая цель», а цель, которую можно удержать.",
+  "prioritise": "Британское написание урока. В американском — prioritize. В интервью это отдельный шаг: не делать всё сразу, а выбрать главное.",
+  "track-progress": "В списке приёмов 2.4 рядом с дневником и соцсетями. Track — вести след, не «гусеница» и не «дорожка».",
+  "achievable": "В вопросах аудирования цели не держатся, если они не achievable. Близко к realistic, но realistic оценивает план, achievable — саму возможность дойти.",
+  "stick-to": "В интервью клиент stick to his goal. Предлог to. Не «приклеиться». Give up — бросить, stick to — не сойти с выбранного.",
+  "reward-yourself": "Один из приёмов в задании на аудирование: награда после достигнутого шага, не вместо шага.",
+  "one-change": "В списке приёмов 2.4. Противоположность сразу нескольким новогодним обещаниям из урока 2.1.",
+  "deeply-opposed": "В рамке урока верно deeply opposed или strongly opposed. Utterly opposed учебник помечает как неестественное. Utterly из Unit 4 усиливает другое: utterly useless, не opposed.",
+  "the-worst-ever": "В Café Hub так добавляют эмфазу: the worst meal I've ever had, the least vegetarian person. Ever здесь не «когда-нибудь» в вопросе, а усилитель превосходной степени."
+};
+var KEY = "lh-u2-extra-known";
+var CHIP_NAMES = ["Все", "Здоровье", "Привычка", "Допущения", "Сети", "Еда", "Самопомощь", "Совет", "Цели", "Усиление"];
+var INTRO = {
+  "title": "Unit 2 · сверх словаря",
+  "topic": "Слова и обороты урока Lifestyles, которых нет в официальном wordlist Unit 2. Официальный список — отдельная колода.",
+  "source": "Language Hub Upper Intermediate, Unit 2: учебник и рабочая тетрадь. На обороте краткий пересказ, не формулировка учебника.",
+  "notes": [
+    "«Слушать» читает английское. На обороте — слово и короткую английскую формулировку."
+  ]
+};
+var INTRO_KEY = KEY + "-intro-seen";
+var known = {};
+try { JSON.parse(localStorage.getItem(KEY) || "[]").forEach(function (id) { known[id] = true; }); } catch (e) {}
+var section = "Все";
+var onlyNew = false;
+var shuffled = false;
+var order = CARDS.map(function (_, i) { return i; });
+var cursor = 0;
+var face = "front";
+var startX = 0;
+var swiped = false;
+var showIntro = introHasContent();
+try {
+  if (localStorage.getItem(INTRO_KEY) === "1") showIntro = false;
+} catch (e) {}
+
+function introHasContent() {
+  if (!INTRO) return false;
+  return !!(INTRO.topic || INTRO.title);
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(Object.keys(known))); } catch (e) {}
+}
+function dismissIntro() {
+  if (!showIntro) return;
+  showIntro = false;
+  try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  cursor = 0;
+  face = "front";
+  render();
+}
+function photoHtml(card) {
+  var p = PHOTO[card.id];
+  if (!p) return "";
+  var start = p.thumb || p.src;
+  var large = (p.src && p.thumb) ? p.src : "";
+  var html = '<div class="picture"><img alt="" src="' + start + '" data-large="' + large + '"></div>';
+  if (p.credit && p.href && p.href !== "#") {
+    html += '<p class="credit"><a href="' + p.href + '" target="_blank" rel="noopener">' + escapeHtml(p.credit) + "</a></p>";
+  }
+  return html;
+}
+function upgradePhoto() {
+  var img = document.querySelector(".picture img");
+  if (!img) return;
+  var large = img.getAttribute("data-large");
+  if (!large) return;
+  var probe = new Image();
+  probe.onload = function () { img.src = large; };
+  probe.src = large;
+}
+function isActivateKey(event) {
+  var k = event.key;
+  if (k === "Enter" || k === " " || k === "Spacebar") return true;
+  return event.keyCode === 13 || event.keyCode === 32;
+}
+function pool() {
+  return order.filter(function (i) {
+    var card = CARDS[i];
+    if (section !== "Все" && card.section !== section) return false;
+    if (onlyNew && known[card.id]) return false;
+    return true;
+  });
+}
+function escapeHtml(text) {
+  return String(text == null ? "" : text).replace(/[&<>"]/g, function (ch) {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch];
+  });
+}
+function wordClass(word) {
+  var n = String(word || "").length;
+  if (n > 42) return "word longer";
+  if (n > 18) return "word long";
+  return "word";
+}
+function posLine(card) {
+  var pos = card.pos || "";
+  var ipa = card.ipa || "";
+  if (pos && ipa) return pos + " · " + ipa;
+  return pos || ipa;
+}
+function sayButton(text) {
+  if (!text) return "";
+  return '<button type="button" class="say" data-say="' + escapeHtml(text) + '">Слушать</button>';
+}
+function englishVoice() {
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() || [] : [];
+  var i, v, gb, any;
+  for (i = 0; i < voices.length; i++) {
+    v = voices[i];
+    if (!v.lang || v.lang.indexOf("en") !== 0) continue;
+    if (!any) any = v;
+    if (!gb && v.lang.indexOf("en-GB") === 0) gb = v;
+  }
+  return gb || any || null;
+}
+function speakEnglish(text) {
+  if (!text) return;
+  if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+  var synth = window.speechSynthesis;
+  synth.cancel();
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "en-GB";
+  utter.rate = 0.92;
+  var voice = englishVoice();
+  if (voice) utter.voice = voice;
+  synth.speak(utter);
+}
+function stopSpeech() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+}
+function renderChips() {
+  var names = CHIP_NAMES;
+  document.getElementById("chips").innerHTML = names.map(function (name) {
+    return '<button type="button" data-section="' + name + '"' + (name === section ? ' class="on"' : "") + ">" + name + "</button>";
+  }).join("");
+}
+function introBlock(label, text) {
+  if (!text) return "";
+  var html = "";
+  if (label) html += '<p class="intro-label">' + escapeHtml(label) + "</p>";
+  return html + '<p class="intro-text">' + escapeHtml(text) + "</p>";
+}
+function renderIntro() {
+  var knownCount = CARDS.filter(function (card) { return known[card.id]; }).length;
+  document.getElementById("count").textContent = knownCount + " из " + CARDS.length + " помню";
+  document.getElementById("fill").style.width = CARDS.length ? Math.round(knownCount / CARDS.length * 100) + "%" : "0%";
+  document.getElementById("unknown").textContent = onlyNew ? "Все карточки" : "Только новые";
+  document.body.className = (document.body.className || "").replace(/\bintro-on\b/g, "") + " intro-on";
+  var inner = '<p class="kicker">О колоде</p>'
+    + '<h2 class="word">' + escapeHtml(INTRO.title || "Колода") + "</h2>"
+    + introBlock("", INTRO.topic)
+    + introBlock(INTRO.source ? "Источник" : "", INTRO.source)
+    + (INTRO.notes || []).map(function (note) { return introBlock("", note); }).join("")
+    + '<p class="hint">Нажмите «Дальше», чтобы начать. Эта карточка больше не появится.</p>';
+  document.getElementById("stage").innerHTML =
+    '<div class="card intro" id="card" role="button" tabindex="0">' + inner + "</div>";
+  var cardEl = document.getElementById("card");
+  cardEl.addEventListener("click", function (event) {
+    if (closestEl(event.target, "a")) return;
+    if (swiped) { swiped = false; return; }
+    dismissIntro();
+  });
+  cardEl.addEventListener("keydown", function (event) {
+    if (!isActivateKey(event)) return;
+    event.preventDefault();
+    dismissIntro();
+  });
+}
+function render() {
+  var items = pool();
+  var knownCount = CARDS.filter(function (card) { return known[card.id]; }).length;
+  document.getElementById("count").textContent = knownCount + " из " + CARDS.length + " помню";
+  document.getElementById("fill").style.width = CARDS.length ? Math.round(knownCount / CARDS.length * 100) + "%" : "0%";
+  document.getElementById("unknown").textContent = onlyNew ? "Все карточки" : "Только новые";
+  if (showIntro) {
+    renderIntro();
+    return;
+  }
+  document.body.className = (document.body.className || "").replace(/\bintro-on\b/g, "").replace(/^\s+|\s+$/g, "");
+  var stage = document.getElementById("stage");
+  if (!items.length) {
+    stage.innerHTML = '<p class="empty">В этом наборе карточек не осталось. Смените тему или нажмите «Все карточки».</p>';
+    return;
+  }
+  if (cursor >= items.length) cursor = 0;
+  var card = CARDS[items[cursor]];
+  var word = card.word || card.id;
+  var mark = known[card.id] ? " · помню" : "";
+  var sayFront = word;
+  var sayBack = card.en ? (word + ". " + card.en) : word;
+  var meta = posLine(card);
+  var inner = face === "front"
+    ? '<p class="kicker">' + escapeHtml(card.section) + " · " + (cursor + 1) + " / " + items.length + mark + '</p>'
+      + '<h2 class="' + wordClass(word) + '">' + escapeHtml(word) + '</h2>'
+      + sayButton(sayFront)
+      + '<p class="hint">Нажмите, чтобы увидеть объяснение</p>'
+    : '<p class="kicker">' + escapeHtml(word) + "</p>"
+      + sayButton(sayBack)
+      + photoHtml(card)
+      + '<p class="ru">' + escapeHtml(card.ru) + "</p>"
+      + (EXPLAIN[card.id] ? '<p class="explain">' + escapeHtml(EXPLAIN[card.id]) + "</p>" : "")
+      + (meta ? '<p class="pos">' + escapeHtml(meta) + "</p>" : "")
+      + (card.en ? '<p class="en">' + escapeHtml(card.en) + "</p>" : "");
+  stage.innerHTML = '<div class="card ' + face + '" id="card" role="button" tabindex="0">' + inner + "</div>";
+  var cardEl = document.getElementById("card");
+  function flipCard(event) {
+    if (closestEl(event.target, "a")) return;
+    var say = closestEl(event.target, ".say");
+    if (say) {
+      speakEnglish(say.getAttribute("data-say"));
+      return;
+    }
+    if (swiped) { swiped = false; return; }
+    stopSpeech();
+    face = face === "front" ? "back" : "front";
+    render();
+  }
+  cardEl.addEventListener("click", flipCard);
+  cardEl.addEventListener("keydown", function (event) {
+    if (!isActivateKey(event)) return;
+    event.preventDefault();
+    flipCard(event);
+  });
+  upgradePhoto();
+}
+function step(delta) {
+  if (showIntro) {
+    if (delta > 0) dismissIntro();
+    return;
+  }
+  var items = pool();
+  if (!items.length) return;
+  stopSpeech();
+  cursor = (cursor + delta + items.length) % items.length;
+  face = "front";
+  render();
+}
+document.getElementById("chips").addEventListener("click", function (event) {
+  var button = closestEl(event.target, "button");
+  if (!button) return;
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  section = button.getAttribute("data-section");
+  cursor = 0;
+  face = "front";
+  renderChips();
+  render();
+});
+document.getElementById("prev").addEventListener("click", function () { step(-1); });
+document.getElementById("next").addEventListener("click", function () { step(1); });
+document.getElementById("again").addEventListener("click", function () {
+  if (showIntro) { dismissIntro(); return; }
+  var items = pool();
+  if (!items.length) return;
+  delete known[CARDS[items[cursor]].id];
+  save();
+  face = "front";
+  step(1);
+});
+document.getElementById("known").addEventListener("click", function () {
+  if (showIntro) { dismissIntro(); return; }
+  var items = pool();
+  if (!items.length) return;
+  known[CARDS[items[cursor]].id] = true;
+  save();
+  face = "front";
+  if (onlyNew) render();
+  else step(1);
+});
+document.getElementById("shuffle").addEventListener("click", function () {
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  shuffled = !shuffled;
+  order = CARDS.map(function (_, i) { return i; });
+  if (shuffled) {
+    for (var i = order.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+    }
+  }
+  document.getElementById("shuffle").textContent = shuffled ? "По порядку" : "Перемешать";
+  cursor = 0;
+  face = "front";
+  render();
+});
+document.getElementById("unknown").addEventListener("click", function () {
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  onlyNew = !onlyNew;
+  cursor = 0;
+  face = "front";
+  render();
+});
+document.getElementById("reset").addEventListener("click", function () {
+  if (showIntro) {
+    showIntro = false;
+    try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {}
+  }
+  known = {};
+  save();
+  onlyNew = false;
+  cursor = 0;
+  face = "front";
+  render();
+});
+document.addEventListener("touchstart", function (event) {
+  if (!closestEl(event.target, ".card")) return;
+  startX = event.changedTouches[0].clientX;
+});
+document.addEventListener("touchend", function (event) {
+  if (!closestEl(event.target, ".card")) return;
+  var dx = event.changedTouches[0].clientX - startX;
+  if (Math.abs(dx) < 48) return;
+  swiped = true;
+  step(dx < 0 ? 1 : -1);
+});
+try {
+  renderChips();
+  render();
+  var nojs = document.getElementById("nojs");
+  if (nojs) nojs.style.display = "none";
+} catch (err) {
+  var box = document.getElementById("nojs");
+  if (box) box.textContent = "Ошибка запуска: " + (err && err.message ? err.message : err);
+}
+</script>
+</body>
+</html>
